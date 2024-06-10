@@ -1,4 +1,4 @@
 package de.edu.lmu;
 
-public interface PCGOutput {
+public sealed interface PCGOutput permits PCGIntOutput, PCGLongOutput {
 }
