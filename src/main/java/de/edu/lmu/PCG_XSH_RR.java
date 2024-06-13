@@ -20,7 +20,7 @@ public class PCG_XSH_RR implements PCG<PCG_XSH_RR>, PCGIntOutput{
 
     @Override
     public int nextInt() {
-        // permutation todo!
+        // permutation
         int shiftedInt = (int) ((this.state ^ (this.state >> 18)) >> 27);
         int rotationDistance = (int) (this.state >> 59);
         this.state = Integer.rotateRight(shiftedInt, rotationDistance);
