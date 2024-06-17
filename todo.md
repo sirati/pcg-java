@@ -1,12 +1,11 @@
 ToDo-List:
-1. 6.3.3. & 6.3.4 (sirati)
+1. 6.3.3. & 6.3.4 (sirati/Lou)
      in src/main/java/de.edu.lmu/PCG-XSL-RR  bzw.:  PCG-RXS-M-XS
-2. Performance Measuering && Statistical tests mit einbinden:
-   - performance measuering
-   - statistical test smallCrush
-   - statistical test Crush
-   - statistcal test BigCrush
-   - statistical test linearComp
+2. Performance Measuring && Statistical tests mit einbinden:
+   - performance measuring (sirati)
+   - statistical test smallCrush && Crush && BigCrush (Ferdi/Lou) 
+   - statistical test linearComp (Clarissa)
+3. Zoommeeting: Timetable erstellen (evtl. ne Woche früher abgeben)
 
 Offene Fragen:
       BigInt performant?
