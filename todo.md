@@ -20,6 +20,14 @@ Offene Fragen:
 - tests [pcg-random statistical tests](https://www.pcg-random.org/statistical-tests.html)
 
 
+
+
+
+
+
+
+
+
 Done (17.06.2024):
 1. PCG_Modelle aus Chapter 6.3.
    + 6.3.1 (Ferdi)
