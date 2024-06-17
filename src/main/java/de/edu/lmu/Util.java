@@ -2,6 +2,9 @@ package de.edu.lmu;
 
 public final class Util {
     private Util() {}
+    private static long longMultiplier = 6364136223846793005L;
+    private static long longIncrement = 1442695040888963407L;
+    private static long longMod = 1L << 63;
 
     // (base^exponent) % modulus
     private static long modExp(long base, long exponent, long modulus) {
@@ -24,25 +27,21 @@ public final class Util {
 
     // skip method for long type
     static long skipLong(long state, long steps) {
-        long a = 6364136223846793005L; // example multiplier
-        long c = 1442695040888963407L; // example increment
-        long m = 1L << 63; // 2^63, the modulus
-
         // a^i % m
-        long a_i = modExp(a, steps, m);
+        long a_i = modExp(longMultiplier, steps, longMod);
 
         // (a^i - 1) % m
-        long a_i_minus_1 = (a_i - 1 + m) % m;
+        long a_i_minus_1 = (a_i - 1 + longMod) % longMod;
 
         // modular multiplicative inverse of (a - 1) % m
-        long a_minus_1 = (a - 1 + m) % m;
-        long inverse_a_minus_1 = modInverse(a_minus_1, m);
+        long a_minus_1 = (longMultiplier - 1 + longMod) % longMod;
+        long inverse_a_minus_1 = modInverse(a_minus_1, longMod);
 
         // c * (a^i - 1) / (a - 1) % m
-        long factor = (a_i_minus_1 * inverse_a_minus_1) % m;
-        long offset = (c * factor) % m;
+        long factor = (a_i_minus_1 * inverse_a_minus_1) % longMod;
+        long offset = (longIncrement * factor) % longMod;
 
-        long newState = (a_i * state + offset) % m;
+        long newState = (a_i * state + offset) % longMod;
 
         // debugging
 //        System.out.println("a_i: " + a_i);
@@ -102,5 +101,10 @@ public final class Util {
 
         System.out.println("New long state after skipping: " + newLongState);
         System.out.println("New int state after skipping: " + newIntState);
+    }
+
+    static long newLongState(long state) {
+        long multiplied = (longMultiplier * state) % longMod;
+        return (multiplied + longIncrement) % longMod; // (a * state + offset) % m;
     }
 }
