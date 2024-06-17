@@ -26,7 +26,7 @@ public final class Util {
     static long skipLong(long state, long steps) {
         long a = 6364136223846793005L; // example multiplier
         long c = 1442695040888963407L; // example increment
-        long m = 1L << 64; // 2^64, the modulus
+        long m = 1L << 63; // 2^63, the modulus
 
         // a^i % m
         long a_i = modExp(a, steps, m);
@@ -45,12 +45,12 @@ public final class Util {
         long newState = (a_i * state + offset) % m;
 
         // debugging
-        System.out.println("a_i: " + a_i);
-        System.out.println("a_i_minus_1: " + a_i_minus_1);
-        System.out.println("inverse_a_minus_1: " + inverse_a_minus_1);
-        System.out.println("factor: " + factor);
-        System.out.println("offset: " + offset);
-        System.out.println("newState: " + newState);
+//        System.out.println("a_i: " + a_i);
+//        System.out.println("a_i_minus_1: " + a_i_minus_1);
+//        System.out.println("inverse_a_minus_1: " + inverse_a_minus_1);
+//        System.out.println("factor: " + factor);
+//        System.out.println("offset: " + offset);
+//        System.out.println("newState: " + newState);
 
         // new state
         return newState;
@@ -79,12 +79,12 @@ public final class Util {
         int newState = (a_i * state + offset) % m;
 
         // debugging
-        System.out.println("a_i: " + a_i);
-        System.out.println("a_i_minus_1: " + a_i_minus_1);
-        System.out.println("inverse_a_minus_1: " + inverse_a_minus_1);
-        System.out.println("factor: " + factor);
-        System.out.println("offset: " + offset);
-        System.out.println("newState: " + newState);
+//        System.out.println("a_i: " + a_i);
+//        System.out.println("a_i_minus_1: " + a_i_minus_1);
+//        System.out.println("inverse_a_minus_1: " + inverse_a_minus_1);
+//        System.out.println("factor: " + factor);
+//        System.out.println("offset: " + offset);
+//        System.out.println("newState: " + newState);
 
         // new state
         return newState;
