@@ -11,4 +11,10 @@ ToDo-List:
 2. Skip Methode Chapter 4.3.1 (Clarissa)
 in src/main/java/de.edu.lmu/Util
 
+**next steps (update 17.06.)**
+
+- measure performance (speed) [pcg-random performance](https://www.pcg-random.org/rng-performance.html)
+- mit anderen generatoren vergleichen (evtl. auch C, C++)
+- tests [pcg-random statistical tests](https://www.pcg-random.org/statistical-tests.html)
+
 
