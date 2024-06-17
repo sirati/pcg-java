@@ -8,6 +8,11 @@ public class PCG_XSH_RS implements PCG<PCG_XSH_RS>, PCGIntOutput {
     }
 
     @Override
+    public void newState() {
+        this.state = Util.newLongState(this.state);
+    }
+
+    @Override
     public void skipLong(long ulong) {
         this.state = Util.skipLong(this.state, ulong);
     }
@@ -22,7 +27,7 @@ public class PCG_XSH_RS implements PCG<PCG_XSH_RS>, PCGIntOutput {
         long xorshift   = this.state ^ (this.state >> 22);
         int randomshift = (int) (this.state >> 61);
         // probably we should have a next state method instead of using skip witch is slow!!
-        skip(1);
+        newState();
         return (int) (xorshift >> (22 + randomshift));
     }
 }

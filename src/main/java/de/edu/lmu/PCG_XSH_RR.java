@@ -9,6 +9,11 @@ public class PCG_XSH_RR implements PCG<PCG_XSH_RR>, PCGIntOutput{
     }
 
     @Override
+    public void newState() {
+        this.state = Util.newLongState(this.state);
+    }
+
+    @Override
     public void skipLong(long ulong) {
         this.state = Util.skipLong(this.state, ulong);
     }
@@ -23,7 +28,7 @@ public class PCG_XSH_RR implements PCG<PCG_XSH_RR>, PCGIntOutput{
         // permutation
         int shiftedInt = (int) ((this.state ^ (this.state >> 18)) >> 27);
         int rotationDistance = (int) (this.state >> 59);
-        this.state = Integer.rotateRight(shiftedInt, rotationDistance);
-        return (int) this.state;
+        newState();
+        return Integer.rotateRight(shiftedInt, rotationDistance);
     }
 }
