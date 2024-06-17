@@ -13,7 +13,7 @@ Offene Fragen:
       performance verbesserung?
 
 
-**next steps (update 17.06.)**
+**Infos:**
 
 - measure performance (speed) [pcg-random performance](https://www.pcg-random.org/rng-performance.html)
 - mit anderen generatoren vergleichen (evtl. auch C, C++)
