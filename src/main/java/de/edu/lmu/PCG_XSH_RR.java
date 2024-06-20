@@ -20,7 +20,7 @@ public class PCG_XSH_RR implements PCG<PCG_XSH_RR>, PCGIntOutput{
 
     @Override
     public void skip(int uint) {
-        this.skipLong(uint);
+        this.skipLong((long) uint);
     }
 
     @Override

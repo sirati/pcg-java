@@ -1,5 +1,7 @@
 package de.edu.lmu;
 
+import java.math.BigInteger;
+
 public final class Util {
     private Util() {}
     private static long longMultiplier = 6364136223846793005L;
@@ -20,7 +22,7 @@ public final class Util {
         return result;
     }
 
-    // modular multiplicative inverse of a under modulus
+    // modular multiplicative inverse of an under modulus
     private static long modInverse(long a, long modulus) {
         return modExp(a, modulus - 2, modulus);
     }
@@ -89,6 +91,10 @@ public final class Util {
         return newState;
     }
 
+    public static BigInteger skip128(BigInteger state, long ulong) {
+        return new BigInteger("1"); // TODO
+    }
+
     public static void main(String[] args) {
         long initialLongState = 42L;
         long skipStepsLong = 10L;
@@ -103,8 +109,16 @@ public final class Util {
         System.out.println("New int state after skipping: " + newIntState);
     }
 
-    static long newLongState(long state) {
+    public static int newIntState(int state) {
+        return -1; // TODO
+    }
+
+    public static long newLongState(long state) {
         long multiplied = (longMultiplier * state) % longMod;
         return (multiplied + longIncrement) % longMod; // (a * state + offset) % m;
+    }
+
+    public static BigInteger new128State(BigInteger state) {
+        return new BigInteger("-1"); // TODO
     }
 }
