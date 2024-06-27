@@ -1,8 +1,12 @@
 package de.edu.lmu;
 
 // 64 bit state to 32 bit output
-public class PCG_XSH_RR implements PCG<PCG_XSH_RR>, PCGIntOutput{
+public class PCG_XSH_RR implements PCGInt {
     private long state;
+
+    public static PCG_XSH_RR createFromNumber(Number seed) {
+        return new PCG_XSH_RR(seed.longValue());
+    }
 
     public PCG_XSH_RR(long seed) {
         this.state = seed;

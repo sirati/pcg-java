@@ -1,7 +1,11 @@
 package de.edu.lmu;
 
-public class PCG_XSH_RS implements PCG<PCG_XSH_RS>, PCGIntOutput {
+public class PCG_XSH_RS implements PCGInt {
     private long state;
+
+    public static PCG_XSH_RS createFromNumber(Number seed) {
+        return new PCG_XSH_RS(seed.longValue());
+    }
 
     public PCG_XSH_RS(long seed) {
         this.state = seed;
