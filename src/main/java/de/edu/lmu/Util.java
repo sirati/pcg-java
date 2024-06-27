@@ -34,13 +34,21 @@ public final class Util {
         }
         return result;
     }
+
     // TODO: modExp muss auch für 128bit implementiert werden
+    private static BigInteger bigModExp(BigInteger base, BigInteger exponent, BigInteger modulus) {
+        return BigInteger.ONE;
+    }
 
     // modular multiplicative inverse of an under modulus
     private static long modInverse(long a, long modulus) {
         return modExp(a, modulus - 2, modulus);
     }
+
     // TODO: modInverse muss auch für 128bit implementiert werden
+    private static BigInteger bigModInverse(BigInteger a, BigInteger modulus) {
+        return BigInteger.ONE;
+    }
 
     // skip method for long type
     static long skipLong(long state, long steps) {
@@ -102,9 +110,24 @@ public final class Util {
         return newState;
     }
 
-    public static BigInteger skip128(BigInteger state, long ulong) {
-        return new BigInteger("1");
-        // TODO: skip muss auch für 128bit implementiert werden
+    public static BigInteger skip128(BigInteger state, BigInteger steps) {
+        // a^i % m
+        BigInteger a_i = bigModExp(bigMultiplier, steps, bigModulus);
+
+        // (a^i - 1) % m
+        BigInteger a_i_minus_1 = a_i.subtract(BigInteger.ONE).add(bigModulus).mod(bigModulus);
+
+        // modular multiplicative inverse of (a - 1) % m
+        BigInteger a_minus_1 = (bigMultiplier.subtract(BigInteger.ONE).add(bigModulus).mod(bigModulus);
+        BigInteger inverse_a_minus_1 = bigModInverse(a_minus_1, bigModulus);
+
+        // c * (a^i - 1) / (a - 1) % m
+        BigInteger factor = (a_i_minus_1.multiply(inverse_a_minus_1)).mod(bigModulus);
+        BigInteger offset = (bigIncrement.multiply(factor)).mod(bigModulus);
+
+        BigInteger newState = (a_i.multiply(state).add(offset)).mod(bigModulus);
+
+        return newState;
     }
 
     public static void main(String[] args) {
