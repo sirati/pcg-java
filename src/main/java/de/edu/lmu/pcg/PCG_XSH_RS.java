@@ -1,4 +1,4 @@
-package de.edu.lmu;
+package de.edu.lmu.pcg;
 
 public class PCG_XSH_RS implements PCGInt {
     private long state;

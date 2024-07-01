@@ -1,4 +1,4 @@
-package de.edu.lmu;
+package de.edu.lmu.pcg;
 import java.math.BigInteger;
 
 public class PCG_XSL_RR implements PCGLong {

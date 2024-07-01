@@ -1,4 +1,4 @@
-package de.edu.lmu;
+package de.edu.lmu.pcg;
 
 public interface PCG  {
     void skipLong(long ulong);

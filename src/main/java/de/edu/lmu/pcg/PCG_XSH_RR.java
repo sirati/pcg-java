@@ -1,4 +1,4 @@
-package de.edu.lmu;
+package de.edu.lmu.pcg;
 
 // 64 bit state to 32 bit output
 public class PCG_XSH_RR implements PCGInt {

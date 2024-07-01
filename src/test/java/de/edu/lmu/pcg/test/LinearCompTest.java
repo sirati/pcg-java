@@ -1,4 +1,4 @@
-package de.edu.lmu;
+package de.edu.lmu.pcg.test;
 // SSJ = Stochastic Simulation in Java
 
 // linear complexity
@@ -9,11 +9,14 @@ package de.edu.lmu;
 // takes down every generator that is just a linear-feedback shift register generator, including generalized ones like XorShift
 
 
+import de.edu.lmu.pcg.PCG;
+import de.edu.lmu.pcg.PCG_XSH_RR;
+import de.edu.lmu.pcg.PCG_XSH_RS;
+import de.edu.lmu.pcg.PCG_XSL_RR;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.math.BigInteger;
 import java.util.stream.Stream;
 
 public class LinearCompTest {

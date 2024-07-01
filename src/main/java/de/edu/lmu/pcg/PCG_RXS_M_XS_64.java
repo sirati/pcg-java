@@ -1,4 +1,4 @@
-package de.edu.lmu;
+package de.edu.lmu.pcg;
 
 public class PCG_RXS_M_XS_64 implements PCGLong {
 
