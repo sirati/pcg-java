@@ -1,7 +1,16 @@
 package de.edu.lmu.pcg;
 
+import de.edu.lmu.pcg.services.PCGCtorService;
+
 // 64 bit state to 32 bit output
 public class PCG_XSH_RR implements PCGInt {
+    public static class CtorService implements PCGCtorService<PCG_XSH_RR, Long> {
+        @Override
+        public PCG_XSH_RR create(Long seed) {
+            return new PCG_XSH_RR(seed);
+        }
+    }
+
     private long state;
 
     public static PCG_XSH_RR createFromNumber(Number seed) {

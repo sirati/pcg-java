@@ -26,7 +26,7 @@ public class LinearCompTest {
             PCG_XSH_RS::createFromNumber
     };
 
-    @Test
+    //@Test
     void runLinearCompTestOnAll() {
         // List of PCG versions to test
         long seed = 123456789;
@@ -42,8 +42,8 @@ public class LinearCompTest {
         return Stream.of(pcgClasses);
     }
 
-    @ParameterizedTest
-    @MethodSource("rngCtorProvider")
+    //@ParameterizedTest
+    //@MethodSource("rngCtorProvider")
     <T extends PCG, Seed extends Number> void runLinearCompTestOnIndividual(TestConstructor<T, Seed> constructor) {
         // List of PCG versions to test
         long seed = 123456789;

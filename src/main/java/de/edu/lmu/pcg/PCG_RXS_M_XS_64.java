@@ -1,6 +1,14 @@
 package de.edu.lmu.pcg;
 
+import de.edu.lmu.pcg.services.PCGCtorService;
+
 public class PCG_RXS_M_XS_64 implements PCGLong {
+    public static class CtorService implements PCGCtorService<PCG_RXS_M_XS_64, Long> {
+        @Override
+        public PCG_RXS_M_XS_64 create(Long seed) {
+            return new PCG_RXS_M_XS_64(seed);
+        }
+    }
 
     private static final long MCG_MULTIPLIER = Long.parseUnsignedLong("12605985483714917081");
 

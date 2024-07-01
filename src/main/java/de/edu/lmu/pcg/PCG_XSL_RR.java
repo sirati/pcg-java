@@ -1,7 +1,15 @@
 package de.edu.lmu.pcg;
+import de.edu.lmu.pcg.services.PCGCtorService;
+
 import java.math.BigInteger;
 
 public class PCG_XSL_RR implements PCGLong {
+    public static class CtorService implements PCGCtorService<PCG_XSL_RR, BigInteger> {
+        @Override
+        public PCG_XSL_RR create(BigInteger seed) {
+            return new PCG_XSL_RR(seed);
+        }
+    }
     private static final BigInteger MASK_128 = new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", 16);
     private static final BigInteger MASK_64 = new BigInteger("FFFFFFFFFFFFFFFF", 16);
     private BigInteger state;

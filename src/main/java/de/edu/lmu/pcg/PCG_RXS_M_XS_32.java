@@ -1,6 +1,14 @@
 package de.edu.lmu.pcg;
 
+import de.edu.lmu.pcg.services.PCGCtorService;
+
 public class PCG_RXS_M_XS_32 implements PCGInt {
+    public static class CtorService implements PCGCtorService<PCG_RXS_M_XS_32, Integer> {
+        @Override
+        public PCG_RXS_M_XS_32 create(Integer seed) {
+            return new PCG_RXS_M_XS_32(seed);
+        }
+    }
 
     private static final int MCG_MULTIPLIER = 277803737;
 

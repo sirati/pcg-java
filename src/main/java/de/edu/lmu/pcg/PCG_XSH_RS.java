@@ -1,6 +1,15 @@
 package de.edu.lmu.pcg;
 
+import de.edu.lmu.pcg.services.PCGCtorService;
+
 public class PCG_XSH_RS implements PCGInt {
+    public static class CtorService implements PCGCtorService<PCG_XSH_RS, Long> {
+        @Override
+        public PCG_XSH_RS create(Long seed) {
+            return new PCG_XSH_RS(seed);
+        }
+    }
+
     private long state;
 
     public static PCG_XSH_RS createFromNumber(Number seed) {
@@ -28,7 +37,7 @@ public class PCG_XSH_RS implements PCGInt {
 
     @Override
     public int nextInt() {
-        long xorshift   = this.state ^ (this.state >> 22);
+        long xorshift = this.state ^ (this.state >> 22);
         int randomshift = (int) (this.state >> 61);
         newState();
         return (int) (xorshift >> (22 + randomshift));
