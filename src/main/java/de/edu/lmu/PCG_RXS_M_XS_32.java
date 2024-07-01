@@ -1,6 +1,6 @@
 package de.edu.lmu;
 
-public class PCG_RXS_M_XS_32 implements PCG<PCG_RXS_M_XS_32>, PCGIntOutput {
+public class PCG_RXS_M_XS_32 implements PCGInt {
 
     private static final int MCG_MULTIPLIER = 277803737;
 

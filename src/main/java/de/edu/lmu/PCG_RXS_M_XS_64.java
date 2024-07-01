@@ -1,6 +1,6 @@
 package de.edu.lmu;
 
-public class PCG_RXS_M_XS_64 implements PCG<PCG_RXS_M_XS_64>, PCGLongOutput{
+public class PCG_RXS_M_XS_64 implements PCGLong {
 
     private static final long MCG_MULTIPLIER = Long.parseUnsignedLong("12605985483714917081");
 
