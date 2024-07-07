@@ -29,6 +29,10 @@ public sealed interface PCGCtorService
         create(PCGCtorService<T, Seed> service, Class<T> cls_PCG, Class<Seed> cls_Seed) {
             return new PCGCtorServiceDescriptor<>(cls_PCG, cls_Seed, service);
         }
+
+        public String getName() {
+            return cls_PCG.getSimpleName();
+        }
     }
 
     private static Map<Class<? extends PCG>, PCGCtorServiceDescriptor<?, ?>> load_services() {

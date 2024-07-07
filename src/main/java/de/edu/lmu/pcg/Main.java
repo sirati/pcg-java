@@ -12,7 +12,9 @@ import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
-        //var footest = new PCGBuilder<>().type(PCG_RXS_M_XS_32.class).seed(1L).build();
+        //omg java is so cursed....
+        var footest = (PCGLong & SeedMarker<?>) new PCGBuilder<>().type("PCG_RXS_M_XS_64").seed(1L).build();
+        footest.nextLong();
 
         var pcgClasses = PCGCtorService.AVAILABLE_PCGS.values();
         final var seedU64 = 9223332041373072921L;
