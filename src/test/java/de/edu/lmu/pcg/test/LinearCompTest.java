@@ -26,7 +26,7 @@ public class LinearCompTest {
             PCG_XSH_RS::createFromNumber
     };
 
-    //@Test
+    @Test
     void runLinearCompTestOnAll() {
         // List of PCG versions to test
         long seed = 123456789;
@@ -42,8 +42,8 @@ public class LinearCompTest {
         return Stream.of(pcgClasses);
     }
 
-    //@ParameterizedTest
-    //@MethodSource("rngCtorProvider")
+    @ParameterizedTest
+    @MethodSource("rngCtorProvider")
     <T extends PCG, Seed extends Number> void runLinearCompTestOnIndividual(TestConstructor<T, Seed> constructor) {
         // List of PCG versions to test
         long seed = 123456789;
@@ -81,10 +81,14 @@ public class LinearCompTest {
         // Perform the linear complexity test on the sequence
         int linearComplexity = calculateLinearComplexity(sequence);
         System.out.println("Linear complexity for size " + size + ": " + linearComplexity);
-        throw new RuntimeException();
+        if (linearComplexity < 10) { // TODO: adjust value
+            throw new RuntimeException("Linear complexity less than 10: " + linearComplexity);
+        } else {
+            System.out.println("SUCCESS!");
+        }
     }
 
-    //todo this is wrong, delete and manually rewrite
+    // TODO: this is wrong, delete and manually rewrite
     private static int calculateLinearComplexity(int[] sequence) {
         int n = sequence.length;
         int[] b = new int[n];
