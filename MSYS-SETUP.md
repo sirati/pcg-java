@@ -28,6 +28,10 @@
     mkdir -p /path/to/TestU01-1.2.3/installation
 
     ./configure --disable-shared --disable-dependency-tracking --prefix=/TestU01-1.2.3/installation
+   
+   make
+   
+   make install
     ```
 
 5. **Set Session Environment Variables**
