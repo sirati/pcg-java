@@ -4,35 +4,35 @@ import de.edu.lmu.pcg.services.PCGCtorService;
 
 import java.util.Map;
 
-public class PCGBuilder<T_PCG extends PCG, T_Seed extends Number, T_Builder extends PCGBuilder<T_PCG, T_Seed, T_Builder>> {
-    //singleton
-    private final static Map<Class<? extends PCG>, PCGCtorService.PCGCtorServiceDescriptor<?, ?>> ctors = PCGCtorService.load_services();
+import static de.edu.lmu.pcg.services.PCGCtorService.AVAILABLE_PCGS;
 
-    private <T_PCG extends PCG, T_Seed extends Number, T_Builder extends PCGBuilder<T_PCG, T_Seed, T_Builder>> T_Builder magic() {
+public class PCGBuilder<T_PCG extends PCG & SeedMarker<T_Seed>, T_Seed extends Number> {
+    private final static Map<Class<? extends PCG>, PCGCtorService.PCGCtorServiceDescriptor<?, ?>> ctors = AVAILABLE_PCGS;
+
+    @SuppressWarnings("unchecked")
+    private <T_PCG_NEW extends PCG & SeedMarker<T_Seed_NEW>, T_Seed_NEW extends Number, T_Builder extends PCGBuilder<T_PCG_NEW, T_Seed_NEW>> T_Builder magic() {
         return (T_Builder) this;
     }
 
     private PCGCtorService.PCGCtorServiceDescriptor<T_PCG, T_Seed> descriptor;
     private T_Seed seed;
-    public <T_PCG extends PCG> PCGBuilder<T_PCG, T_Seed, ?>.Step1 type(Class<T_PCG> cls_PCG) {
-        PCGBuilder<T_PCG, T_Seed, ?> result = magic();
-        result.descriptor = (PCGCtorService.PCGCtorServiceDescriptor<T_PCG, T_Seed>) ctors.get(cls_PCG);
+
+    //technically as it is now this could just be the constructor and everything would be fine as well
+    public <T_PCG_NEW extends PCG & SeedMarker<T_Seed_NEW>, T_Seed_NEW extends Number> PCGBuilder<T_PCG_NEW, T_Seed_NEW>.StateConfigured type(Class<T_PCG_NEW> cls_PCG) {
+        PCGBuilder<T_PCG_NEW, T_Seed_NEW> result = magic();
+        result.descriptor = (PCGCtorService.PCGCtorServiceDescriptor<T_PCG_NEW, T_Seed_NEW>) ctors.get(cls_PCG);
         if (this.descriptor == null) {
             throw new RuntimeException("No ctor service found for class " + cls_PCG + ".\n\tavailable: \n\t\t"
                     + ctors.keySet().stream().map(Class::getName).reduce((a, b) -> a + ", " + b).orElse("none"));
         }
-        return result.new Step1();
+        return result.new StateConfigured();
     }
 
-    public class Step1 {
-        public <T_Seed extends Number> PCGBuilder<T_PCG, T_Seed, ?>.Step2 seed(T_Seed seed) {
-            PCGBuilder<T_PCG, T_Seed, ?> result = magic();
-            result.seed = seed;
-            return result.new Step2();
+    public class StateConfigured {
+        public  PCGBuilder<T_PCG, T_Seed>.StateConfigured seed(T_Seed seed) {
+            PCGBuilder.this.seed = seed;
+            return this;
         }
-    }
-
-    public class Step2 {
         public T_PCG build() {
             return descriptor.service().create(seed);
         }

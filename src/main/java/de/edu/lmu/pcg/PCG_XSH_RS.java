@@ -2,10 +2,10 @@ package de.edu.lmu.pcg;
 
 import de.edu.lmu.pcg.services.PCGCtorService;
 
-public class PCG_XSH_RS implements PCGInt {
-    public static class CtorService implements PCGCtorService<PCG_XSH_RS, Long> {
+public class PCG_XSH_RS implements PCGInt, SeedMarker<Long> {
+    public static class CtorService implements PCGCtorService.SeedU64<PCG_XSH_RS> {
         @Override
-        public PCG_XSH_RS create(Long seed) {
+        public PCG_XSH_RS create(long seed) {
             return new PCG_XSH_RS(seed);
         }
     }
