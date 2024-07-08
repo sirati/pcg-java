@@ -17,8 +17,51 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+
 test {
     useJUnitPlatform()
+}
+
+sourceSets {
+    crush {
+        java {
+            srcDirs = ['src/crush/java']
+        }
+        resources {
+            srcDirs = ['src/crush/resources']
+        }
+    }
+}
+
+configurations {
+    crushImplementation.extendsFrom testImplementation
+    crushRuntimeOnly.extendsFrom testRuntimeOnly
+
+}
+
+dependencies {
+    // Add dependencies for crush tests if any
+    crushImplementation 'junit:junit:4.13.2'
+}
+
+task crushTest(type: Test) {
+    description = 'Runs the crush tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.crush.output.classesDirs
+    classpath = sourceSets.crush.runtimeClasspath
+
+
+    // Set the JVM system property to point to the native library directory
+    systemProperty 'java.library.path', file('target/debug')
+    jvmArgs = ['--enable-preview', '--enable-native-access=ALL-UNNAMED']
+}
+
+check.dependsOn crushTest
+
+tasks.withType(JavaCompile).each {
+    it.options.compilerArgs.add('--enable-preview')
 }
 
 /*tasks.register('runLinearComp', JavaExec) {
