@@ -15,7 +15,7 @@ public class Main {
                                                     PCG_RXS_M_XS_32.class,
                                                     PCG_RXS_M_XS_64.class,
                                                     PCG_XSL_RR.class);
-        long seed = 9223332041373072921L;
+        long seed = 42L;
         long size = 1L << 26;
 
         for (Class<? extends PCG> pcgClass : pcgClasses) {
@@ -56,9 +56,16 @@ public class Main {
         long startTime = System.currentTimeMillis();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             for (int i = 0; i < amount; i++) {
-                String randomNumber = getNextNormalized(pcg); // Generates a random number between 0 and 99
-                writer.write(randomNumber);
-                writer.newLine(); // Adds a new line after each number
+                // String randomNumber = getNextNormalized(pcg); // Generates a random number between 0 and 99
+                if (pcg instanceof PCGInt) {
+                    int randomNumber = ((PCGInt) pcg).nextInt();
+                    writer.write(Integer.toString(randomNumber));
+                    writer.newLine(); // Adds a new line after each number
+                } else {
+                    long randomNumber = ((PCGLong) pcg).nextLong();
+                    writer.write(Long.toString(randomNumber));
+                    writer.newLine(); // Adds a new line after each number
+                }
             }
             // Get the end time
             long endTime = System.currentTimeMillis();

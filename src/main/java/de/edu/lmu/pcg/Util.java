@@ -20,8 +20,8 @@ public final class Util {
     private static final long longIncrement = 1442695040888963407L;
     private static final long longMod = 1L << 63;
 
-    private static final int intMultiplier = 1664525;
-    private static final int intIncrement = 1013904223;
+    private static final int intMultiplier = 747796405;
+    private static final int intIncrement = -1403630843;
     private static final int intMod = 1 << 31;
 
     // (base^exponent) % modulus

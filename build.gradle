@@ -9,6 +9,12 @@ repositories {
     mavenCentral()
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 dependencies {
     implementation files('libs/ssj-3.3.1.jar')
     implementation 'ca.umontreal.iro.simul:ssj:3.3.0'
