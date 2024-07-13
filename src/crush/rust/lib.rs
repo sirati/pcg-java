@@ -30,12 +30,12 @@ pub extern "C" fn create_exchange_adapter_lib_pcg_crush(
 #[no_mangle]
 pub extern "C" fn destroy_exchange_adapter_lib_pcg_crush(adapter: *mut ExchangeAdapter) {
     unsafe {
-        Box::from_raw(adapter);
+        _ = Box::from_raw(adapter);
     }
     println!("destroy_exchange_adapter_lib_pcg_crush");
 }
 
-fn write_internal_state(gen: &mut ExchangeAdapter) {
+fn write_internal_state(gen: &ExchangeAdapter) {
     println!(
         "currently not supporter. current_index: {}, page: {:?}", gen.current_index, gen.currentPage
     )
@@ -63,8 +63,8 @@ pub extern "C" fn launch_medium_lib_pcg_crush(adapter: *mut ExchangeAdapter) {
 
 #[no_mangle]
 pub extern "C" fn launch_small_lib_pcg_crush(adapter: *mut ExchangeAdapter) {
-    //trigger debugger
-    unsafe { std::intrinsics::breakpoint(); }
+    //trigger debugger this will crash the jvm if no dbg is attached
+    //unsafe { std::intrinsics::breakpoint(); }
 
 
     println!("launch_small_lib_pcg_crush");
@@ -86,8 +86,7 @@ fn to_unif01<F: FnMut(&mut ExchangeAdapter)>(mut adapter: ExchangeAdapter, f: F)
 
 
     // Build an object than can  be converted to something that TestU01 can test:
-    let mut unif01 = Unif01Gen::new(Unif01Pair(adapter, f), c_name);
-    unif01
+    Unif01Gen::new(Unif01Pair(adapter, f), c_name)
 }
 
 #[derive(Debug)]
