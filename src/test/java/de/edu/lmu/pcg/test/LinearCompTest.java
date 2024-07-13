@@ -9,37 +9,18 @@ package de.edu.lmu.pcg.test;
 // takes down every generator that is just a linear-feedback shift register generator, including generalized ones like XorShift
 
 
-import de.edu.lmu.pcg.PCG;
-import de.edu.lmu.pcg.PCG_XSH_RR;
-import de.edu.lmu.pcg.PCG_XSH_RS;
-import de.edu.lmu.pcg.PCG_XSL_RR;
-import org.junit.jupiter.api.Test;
+import de.edu.lmu.pcg.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
 public class LinearCompTest {
-    private static final TestConstructor<?, ?>[] pcgClasses = {
-            PCG_XSH_RR::createFromNumber,
-            PCG_XSL_RR::createFromNumber,
-            PCG_XSH_RS::createFromNumber
-    };
-
-    @Test
-    void runLinearCompTestOnAll() {
-        // List of PCG versions to test
-        long seed = 123456789;
-
-        for (TestConstructor<?, ?> pcgClass : pcgClasses) {
-            runLinearCompTest(pcgClass, seed);
-        }
-
-    }
 
 
-    static Stream<TestConstructor<?, ?>> rngCtorProvider() {
-        return Stream.of(pcgClasses);
+    public static Stream<TestConstructor<?, ?>> rngCtorProvider() {
+        return Util.rngCtorProvider();
     }
 
     @ParameterizedTest

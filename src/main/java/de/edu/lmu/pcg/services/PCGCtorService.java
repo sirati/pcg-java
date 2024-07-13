@@ -61,7 +61,7 @@ public sealed interface PCGCtorService
         return result;
     }
 
-    Map<Class<? extends PCG>, PCGCtorService.PCGCtorServiceDescriptor<?, ?>> AVAILABLE_PCGS = PCGCtorService.load_services();
+    public Map<Class<? extends PCG>, PCGCtorService.PCGCtorServiceDescriptor<?, ?>> AVAILABLE_PCGS = PCGCtorService.load_services();
 
     //<editor-fold defaultstate="collapsed" desc="Just writing type to primitive adapters for generic impl">
     /**
