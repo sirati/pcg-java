@@ -68,8 +68,21 @@ public class PCGBuilder<T_PCG extends PCG & SeedMarker<T_Seed>, T_Seed extends N
             PCGBuilder.this.seed = seed;
             return this;
         }
+
+        public  PCGBuilder<T_PCG, T_Seed>.StateConfigured seedFromU128(U128 seed) {
+            var ma = magic();
+            ma.seed = seed;
+            return this;
+        }
+
         public T_PCG build() {
-            return descriptor.service().create(seed);
+            if (descriptor.cls_Seed() == seed.getClass()) {
+                return descriptor.service().create(seed);
+            } else if (descriptor.cls_Seed() == U128.class) {
+                return descriptor.service().create((U128) seed);
+            } else {
+                throw new RuntimeException("Seed type mismatch: " + seed.getClass().getName() + " != " + descriptor.cls_Seed().getName());
+            }
         }
     }
 }
