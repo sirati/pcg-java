@@ -1,14 +1,14 @@
 package de.edu.lmu.pcg.test.crush;
 
+import de.edu.lmu.pcg.PCG_RXS_M_XS_32;
 import org.junit.Test;
+
+import java.util.Random;
 
 public class SmallCrush {
 
     @Test
     public void testCrush() {
-        try (Adapter adapter = new Adapter()) {
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Adapter.testCrush(new PCG_RXS_M_XS_32(new Random().nextInt()));
     }
 }

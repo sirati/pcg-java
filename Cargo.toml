@@ -11,3 +11,4 @@ path = "./src/crush/rust/lib.rs"
 
 [dependencies]
 testu01 = { git = "https://github.com/dzamlo/rust-testu01.git" }
+rand_core = "0.6.4"

@@ -70,11 +70,11 @@ public class LinearCompTest {
         int advance = rng.bitesPerIteration() / 32;
         int i = 0;
         for (; i < size; i += advance) {
-            rng.fillInto(sequence, i, advance);
+            rng.fillOnceInto(sequence, i, advance);
         }
         //deal with corner case of size not being divisible by advance
         if (i > size) {
-            rng.fillInto(sequence, i - advance, i - size);
+            rng.fillOnceInto(sequence, i - advance, i - size);
         }
 
 
