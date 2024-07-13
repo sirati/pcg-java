@@ -3,11 +3,11 @@ import de.edu.lmu.pcg.services.PCGCtorService;
 
 import java.math.BigInteger;
 
-public class PCG_XSL_RR implements PCGLong {
-    public static class CtorService implements PCGCtorService<PCG_XSL_RR, BigInteger> {
+public class PCG_XSL_RR implements PCGLong, SeedMarker<U128> {
+    public static class CtorService implements PCGCtorService.SeedU128<PCG_XSL_RR> {
         @Override
-        public PCG_XSL_RR create(BigInteger seed) {
-            return new PCG_XSL_RR(seed);
+        public PCG_XSL_RR create(U128 seed) {
+            return new PCG_XSL_RR(seed.toBigInteger());
         }
     }
     private static final BigInteger MASK_128 = new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", 16);
