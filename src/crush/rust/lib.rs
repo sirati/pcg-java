@@ -35,7 +35,7 @@ pub extern "C" fn destroy_exchange_adapter_lib_pcg_crush(adapter: *mut ExchangeA
     println!("destroy_exchange_adapter_lib_pcg_crush");
 }
 
-fn write_internal_state(gen: &ExchangeAdapter) {
+fn write_internal_state(gen: &mut ExchangeAdapter) {
     println!(
         "currently not supporter. current_index: {}, page: {:?}", gen.current_index, gen.currentPage
     )
