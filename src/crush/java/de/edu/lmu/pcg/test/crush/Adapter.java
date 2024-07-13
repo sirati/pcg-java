@@ -24,7 +24,7 @@ public class Adapter implements AutoCloseable {
     }
 
     private final Arena arena = Arena.ofShared();
-    // 2 times 32 mb as Int array
+    // 2 times 32 MiB as Int array
     private final SequenceLayout singleRegion = MemoryLayout.sequenceLayout(64 / 2 / 4 * 1024 * 1024, ValueLayout.JAVA_INT);
     private final SequenceLayout ptsLayout = MemoryLayout.sequenceLayout(2, singleRegion);
     private final MemorySegment segment = arena.allocate(ptsLayout);
@@ -40,8 +40,12 @@ public class Adapter implements AutoCloseable {
     private final MethodHandle big_crush_method;
     private static final boolean ID_GENERATOR = false;
     private static final boolean ID_CRUSH = true;
+    private final PCG pcg;
+    private boolean isNextGenLowerPage = false;
+    private long consumerMillis;
 
-    public Adapter() {
+    public Adapter(PCG pcg) {
+        this.pcg = pcg;
         MethodHandle callbackNext;
         try {
             callbackNext = MethodHandles.lookup()
@@ -79,35 +83,63 @@ public class Adapter implements AutoCloseable {
         return Linker.nativeLinker().downcallHandle(method_addr, FunctionDescriptor.ofVoid(ValueLayout.ADDRESS));
     }
 
-    public static void testCrush(PCG pcg) {
-        //print current threads PID
-        System.out.println("PID: " + ProcessHandle.current().pid());
-
-        try (Adapter adapter = new Adapter()) {
-            pcg.fill(adapter.lowerPage.asByteBuffer());
-            Thread t = new Thread(() -> {
-                var isLowerPage = false; //we start with upper page because lower page is generated in advance
-                while (!adapter.isClosed) {
-                    boolean finalIsLowerPage = isLowerPage;
-                    adapter.mutex.criticalSection(ID_GENERATOR,
-                            () -> {
-                                pcg.fill((finalIsLowerPage ? adapter.lowerPage : adapter.higherPage).asByteBuffer());
-                                System.out.println(STR."Filled page\{finalIsLowerPage ? "lower" : "higher"}");
-                            });
-                    isLowerPage = !isLowerPage;
-                }
-            });
-            t.setName("Filler Thread");
-            //t.start();
-            adapter.small_Crush();
-        } finally {
-
+    public static void smallCrush(PCG pcg) {
+        try (Adapter adapter = new Adapter(pcg)) {
+            Adapter.runAnyCrush(adapter, adapter::small_Crush);
+        }
+    }
+    public static void mediumCrush(PCG pcg) {
+        try (Adapter adapter = new Adapter(pcg)) {
+            Adapter.runAnyCrush(adapter, adapter::medium_Crush);
+        }
+    }
+    public static void bigCrush(PCG pcg) {
+        try (Adapter adapter = new Adapter(pcg)) {
+            Adapter.runAnyCrush(adapter, adapter::big_Crush);
         }
     }
 
+
+    private static void runAnyCrush(Adapter adapter, Runnable crushMethod) {
+        //print current threads PID
+        System.out.println(STR."PID: \{ProcessHandle.current().pid()}");
+
+        adapter.fillNextPage();
+        Thread t = new Thread(() -> {
+            while (!adapter.isClosed) {
+                adapter.mutex.criticalSection(ID_GENERATOR, adapter::fillNextPage);
+            }
+        });
+        t.setName("Filler Thread");
+        //t.start();
+        crushMethod.run();
+            }
+
+    private void fillNextPage() {
+        var millis = System.currentTimeMillis();
+        System.out.println(STR."Start generating \{isNextGenLowerPage?"lower":"upper"} page (32mebibytes) ");
+        //we start with upper page because lower page is generated in advance
+        //while (!this.isClosed) {
+            pcg.fill((isNextGenLowerPage ? this.lowerPage : this.higherPage).asByteBuffer());
+//            boolean finalIsLowerPage = isLowerPage;
+//            System.out.println(STR."Filled page\{finalIsLowerPage ? "lower" : "higher"}");
+//            this.mutex.criticalSection(ID_GENERATOR,
+//                    () -> {
+//                        pcg.fill((finalIsLowerPage ? this.lowerPage : this.higherPage).asByteBuffer());
+//                        System.out.println(STR."Filled page\{finalIsLowerPage ? "lower" : "higher"}");
+//                    });
+            isNextGenLowerPage = !isNextGenLowerPage;
+        //}
+
+        System.out.println(STR."Finished generating \{isNextGenLowerPage?"lower":"upper"} page (32mebibytes) took \{System.currentTimeMillis() - millis}ms");
+    }
+
     private int nativeCallbackNext(int b) {
-        System.out.println("Finished crush on one section");
+        System.out.println(STR."Finished crush on one section, took \{System.currentTimeMillis() - consumerMillis}ms");
+        fillNextPage();
         //mutex.wait(ID_CRUSH);
+        consumerMillis = System.currentTimeMillis();
+
         return b + 1;
     }
 
@@ -135,6 +167,7 @@ public class Adapter implements AutoCloseable {
 
     private void callRustMethod(MethodHandle method) {
         if (isDestroyed) throw new IllegalStateException("Rust object is already destroyed");
+        consumerMillis = System.currentTimeMillis();
         isDestroyed = true; //we can only ever call one method
         try {
             method.invoke(rustObj);
@@ -151,7 +184,7 @@ public class Adapter implements AutoCloseable {
         callRustMethod(medium_crush_method);
     }
 
-    private void large_Crush() {
+    private void big_Crush() {
         callRustMethod(big_crush_method);
     }
 
