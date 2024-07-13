@@ -47,6 +47,9 @@ dependencies {
     //crushTest need access to main
     crushImplementation sourceSets.main.output
     crushRuntimeOnly sourceSets.main.runtimeClasspath
+    //crushTest need access to test
+    crushImplementation sourceSets.test.output
+    crushRuntimeOnly sourceSets.test.runtimeClasspath
 }
 
 task crushTest(type: Test) {
