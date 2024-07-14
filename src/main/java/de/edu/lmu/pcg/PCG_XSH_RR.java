@@ -3,10 +3,10 @@ package de.edu.lmu.pcg;
 import de.edu.lmu.pcg.services.PCGCtorService;
 
 // 64 bit state to 32 bit output
-public class PCG_XSH_RR implements PCGInt {
-    public static class CtorService implements PCGCtorService<PCG_XSH_RR, Long> {
+public class PCG_XSH_RR implements PCGInt, SeedMarker<Long> {
+    public static class CtorService implements PCGCtorService.SeedU64<PCG_XSH_RR> {
         @Override
-        public PCG_XSH_RR create(Long seed) {
+        public PCG_XSH_RR create(long seed) {
             return new PCG_XSH_RR(seed);
         }
     }

@@ -9,50 +9,29 @@ package de.edu.lmu.pcg.test;
 // takes down every generator that is just a linear-feedback shift register generator, including generalized ones like XorShift
 
 
-import de.edu.lmu.pcg.PCG;
-import de.edu.lmu.pcg.PCG_XSH_RR;
-import de.edu.lmu.pcg.PCG_XSH_RS;
-import de.edu.lmu.pcg.PCG_XSL_RR;
-import org.junit.jupiter.api.Test;
+import de.edu.lmu.pcg.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
 public class LinearCompTest {
-    private static final TestConstructor<?, ?>[] pcgClasses = {
-            PCG_XSH_RR::createFromNumber,
-            PCG_XSL_RR::createFromNumber,
-            PCG_XSH_RS::createFromNumber
-    };
-
-    @Test
-    void runLinearCompTestOnAll() {
-        // List of PCG versions to test
-        long seed = 123456789;
-
-        for (TestConstructor<?, ?> pcgClass : pcgClasses) {
-            runLinearCompTest(pcgClass, seed);
-        }
-
-    }
 
 
-    static Stream<TestConstructor<?, ?>> rngCtorProvider() {
-        return Stream.of(pcgClasses);
+    public static Stream<TestConstructor<?, U128>> rngCtorProvider() {
+        return Util.rngCtorProvider();
     }
 
     @ParameterizedTest
     @MethodSource("rngCtorProvider")
-    <T extends PCG, Seed extends Number> void runLinearCompTestOnIndividual(TestConstructor<T, Seed> constructor) {
+    <T extends PCG> void runLinearCompTestOnIndividual(TestConstructor<T, U128> constructor) {
         // List of PCG versions to test
-        long seed = 123456789;
+        U128 seed = new U128( 123456789,123456789);
         runLinearCompTest(constructor, seed);
 
     }
-    private static <T extends PCG, Seed extends Number>  void runLinearCompTest(TestConstructor<T, Seed> constructor, long long_seed) {
+    private static <T extends PCG>  void runLinearCompTest(TestConstructor<T, U128> constructor, U128 seed) {
         //noinspection unchecked
-        Seed seed = (Seed)(Number)long_seed;
         T rng = constructor.create(seed);
 
         // Linear complexity test sizes
