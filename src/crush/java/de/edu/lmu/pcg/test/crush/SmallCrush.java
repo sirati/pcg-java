@@ -1,9 +1,6 @@
 package de.edu.lmu.pcg.test.crush;
 
-import de.edu.lmu.pcg.PCG;
-import de.edu.lmu.pcg.PCG_RXS_M_XS_32;
-import de.edu.lmu.pcg.PCG_XSH_RR;
-import de.edu.lmu.pcg.PCG_XSL_RR;
+import de.edu.lmu.pcg.*;
 import de.edu.lmu.pcg.test.TestConstructor;
 import de.edu.lmu.pcg.test.Util;
 import org.junit.Test;
@@ -24,16 +21,17 @@ public class SmallCrush {
     }
 
 
-    static Stream<TestConstructor<?, ?>> rngCtorProvider() {
+    static Stream<TestConstructor<?, U128>> rngCtorProvider() {
         return Util.rngCtorProvider();
     }
 
     @ParameterizedTest
     @MethodSource("rngCtorProvider")
-    <T extends PCG, Seed extends Number> void smallCrush(TestConstructor<T, Seed> constructor) {
-        var seed =new BigInteger(128, new Random());// new Random().nextInt();
-        System.out.println(STR."Seed: \{seed} (0x\{seed.toString(16)})");
-        Adapter.smallCrush(constructor.create((Seed) seed));
+    <T extends PCG> void smallCrush(TestConstructor<T, U128> constructor) {
+        var rnd = new Random();
+        var seed =new U128(rnd.nextLong(), rnd.nextLong());
+        System.out.println(STR."Seed: \{seed} (0x\{Long.toHexString(seed.hi)}{Long.toHexString(seed.lo)})");
+        Adapter.smallCrush(constructor.create(seed));
     }
 
     @Test
