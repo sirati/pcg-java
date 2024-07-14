@@ -11,7 +11,6 @@ package de.edu.lmu.pcg.test;
 
 import de.edu.lmu.pcg.*;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
@@ -19,21 +18,20 @@ import java.util.stream.Stream;
 public class LinearCompTest {
 
 
-    public static Stream<TestConstructor<?, ?>> rngCtorProvider() {
+    public static Stream<TestConstructor<?, U128>> rngCtorProvider() {
         return Util.rngCtorProvider();
     }
 
     @ParameterizedTest
     @MethodSource("rngCtorProvider")
-    <T extends PCG, Seed extends Number> void runLinearCompTestOnIndividual(TestConstructor<T, Seed> constructor) {
+    <T extends PCG> void runLinearCompTestOnIndividual(TestConstructor<T, U128> constructor) {
         // List of PCG versions to test
-        long seed = 123456789;
+        U128 seed = new U128( 123456789,123456789);
         runLinearCompTest(constructor, seed);
 
     }
-    private static <T extends PCG, Seed extends Number>  void runLinearCompTest(TestConstructor<T, Seed> constructor, long long_seed) {
+    private static <T extends PCG>  void runLinearCompTest(TestConstructor<T, U128> constructor, U128 seed) {
         //noinspection unchecked
-        Seed seed = (Seed)(Number)long_seed;
         T rng = constructor.create(seed);
 
         // Linear complexity test sizes
