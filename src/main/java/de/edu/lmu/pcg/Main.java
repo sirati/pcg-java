@@ -1,19 +1,14 @@
 package de.edu.lmu.pcg;
 import de.edu.lmu.pcg.services.PCGCtorService;
 
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
         //omg java is so cursed....
-        var footest = (PCGLong & SeedMarker<?>) new PCGBuilder<>().type("PCG_RXS_M_XS_64").seed(1L).build();
+        var footest = (PCGLong & SeedTypeMarker<?>) new PCGBuilder<>().type("PCG_RXS_M_XS_64").seed(1L).build();
         footest.nextLong();
 
         var pcgClasses = PCGCtorService.AVAILABLE_PCGS.values();

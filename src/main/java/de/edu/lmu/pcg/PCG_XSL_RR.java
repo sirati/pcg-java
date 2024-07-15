@@ -3,7 +3,7 @@ import de.edu.lmu.pcg.services.PCGCtorService;
 
 import java.math.BigInteger;
 
-public class PCG_XSL_RR implements PCGLong, SeedMarker<U128> {
+public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     public static class CtorService implements PCGCtorService.SeedU128<PCG_XSL_RR> {
         @Override
         public PCG_XSL_RR create(U128 seed) {
