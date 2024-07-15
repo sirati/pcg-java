@@ -1,5 +1,6 @@
 package de.edu.lmu.pcg;
 
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 
 public final class Util {
@@ -161,5 +162,12 @@ public final class Util {
     public static BigInteger new128State(BigInteger state) {
         BigInteger multiplied = state.multiply(bigMultiplier).mod(bigModulus);
         return (multiplied.add(bigIncrement)).mod(bigModulus);
+    }
+
+    public static Class<?> toWrapperClass(Class<?> primitiveClass) {
+        if (!primitiveClass.isPrimitive()) {
+            throw new IllegalArgumentException("The provided class is not a primitive type");
+        }
+        return Array.get(Array.newInstance(primitiveClass, 1), 0).getClass();
     }
 }

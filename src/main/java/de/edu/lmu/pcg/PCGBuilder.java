@@ -76,7 +76,8 @@ public class PCGBuilder<T_PCG extends PCG & SeedMarker<T_Seed>, T_Seed extends N
         }
 
         public T_PCG build() {
-            if (descriptor.cls_Seed() == seed.getClass()) {
+            if (descriptor.cls_Seed() == seed.getClass()
+                    || (descriptor.cls_Seed().isPrimitive() && seed.getClass() == Util.toWrapperClass(descriptor.cls_Seed()))) {
                 return descriptor.service().create(seed);
             } else if (seed.getClass() == U128.class) {
                 return descriptor.service().create((U128) seed);
