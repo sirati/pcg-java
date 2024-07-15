@@ -1,4 +1,6 @@
 package de.edu.lmu.pcg;
+import de.edu.lmu.pcg.services.PCGCtorService;
+
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -6,45 +8,26 @@ import java.util.List;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
-        List<Class<? extends PCG>> pcgClasses = Arrays.asList(
-                                                    PCG_XSH_RR.class,
-                                                    PCG_XSH_RS.class,
-                                                    PCG_RXS_M_XS_32.class,
-                                                    PCG_RXS_M_XS_64.class,
-                                                    PCG_XSL_RR.class);
-        long seed = 9223332041373072921L;
+        //omg java is so cursed....
+        var footest = (PCGLong & SeedMarker<?>) new PCGBuilder<>().type("PCG_RXS_M_XS_64").seed(1L).build();
+        footest.nextLong();
+
+        var pcgClasses = PCGCtorService.AVAILABLE_PCGS.values();
+        final var seedU64 = 9223332041373072921L;
+        final var seedU128 = new U128(seedU64, seedU64);
+
         long size = 1L << 26;
 
-        for (Class<? extends PCG> pcgClass : pcgClasses) {
+        for (var pcgClass_desc : pcgClasses) {
             try {
-                Object pcgInstance;
-                Field stateField = pcgClass.getDeclaredField("state");
-                if (stateField.getType().equals(int.class)) {
-                    int seed32 = (int) seed;
-                    pcgInstance = new PCGBuilder<>()
-                            .type(pcgClass)
-                            .seed(seed32)
-                            .build();
-                } else if (stateField.getType().equals(long.class)){
-                    pcgInstance = new PCGBuilder<>()
-                            .type(pcgClass)
-                            .seed(seed)
-                            .build();
-                } else if (stateField.getType().equals(BigInteger.class)) {
-                    BigInteger seed128 = new BigInteger(Long.toString(seed)+Long.toString(seed));
-                    pcgInstance = new PCGBuilder<>()
-                            .type(pcgClass)
-                            .seed(seed128)
-                            .build();
-                } else {
-                    throw new IllegalArgumentException("Unsupported seed for pcg class: " + pcgClass + "needs a state of " + stateField.getType());
-                }
+                var pcgInstance = pcgClass_desc.service().create(seedU128);
                 // Output to file
-                String filename = pcgClass.getSimpleName() + ".txt";
-                outputToFile(pcgInstance, size, filename);
+                String filename = pcgClass_desc.cls_PCG().getSimpleName() + ".txt";
+                //outputToFile(pcgInstance, size, filename);
 
             } catch (Exception e) {
                 e.printStackTrace();
