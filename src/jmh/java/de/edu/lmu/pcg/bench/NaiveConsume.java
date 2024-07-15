@@ -1,6 +1,6 @@
 package de.edu.lmu.pcg.bench;
 
-import de.edu.lmu.PCG_RXS_M_XS_32;
+import de.edu.lmu.pcg.PCG_RXS_M_XS_32;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
