@@ -22,7 +22,7 @@ public class Main {
                 var pcgInstance = pcgClass_desc.service().create(seedU128);
                 // Output to file
                 String filename = pcgClass_desc.cls_PCG().getSimpleName() + ".txt";
-                //outputToFile(pcgInstance, size, filename);
+                outputToFile(pcgInstance, size, filename);
 
             } catch (Exception e) {
                 e.printStackTrace();

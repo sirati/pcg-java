@@ -48,8 +48,8 @@ public class LinearCompTest {
 
         // perform linear complexity test on sequence
         int linearComplexity = calculateLinearComplexity(sequence);
-        System.out.println("Generated sequence for " + rng.getClass().getSimpleName() + ": " + Arrays.toString(sequence));
-        System.out.println("Linear complexity for size " + size + ": " + linearComplexity);
+//        System.out.println("Generated sequence for " + rng.getClass().getSimpleName() + ": " + Arrays.toString(sequence));
+//        System.out.println("Linear complexity for size " + size + ": " + linearComplexity);
         if (linearComplexity < 10) {
             throw new RuntimeException("Linear complexity less than 10: " + linearComplexity);
         } else {
@@ -61,7 +61,7 @@ public class LinearCompTest {
    
     private static int calculateLinearComplexity(int[] sequence) {
         int n = sequence.length;
-        System.out.println("Generated sequence: " + Arrays.toString(sequence));
+//        System.out.println("Generated sequence: " + Arrays.toString(sequence));
         int[] b = new int[n];
         int[] c = new int[n];
         int[] t = new int[n];
@@ -77,17 +77,17 @@ public class LinearCompTest {
         // critical part where d is updated
         while (N < n) {
             int d = sequence[N];
-            System.out.println("Initial d: " + d);
+//            System.out.println("Initial d: " + d);
             for (int i = 1; i <= l; i++) {
                 // ^ (bitwise XOR) copies the bit if it is set in one operand but not both
                 d ^= c[i] * sequence[N - i];
             }
 
-            System.out.println("N = " + N + ", initial d = " + sequence[N] + ", updated d = " + d);
+//            System.out.println("N = " + N + ", initial d = " + sequence[N] + ", updated d = " + d);
 
             if (d != 0) { // discrepancy d is found
 
-                System.out.println("Updating c and possibly b");
+//                System.out.println("Updating c and possibly b");
 
                 System.arraycopy(c, 0, t, 0, n);
                 for (int i = 0; i < n - (N - m); i++) {
@@ -95,7 +95,7 @@ public class LinearCompTest {
                     // when a discrepancy d is detected, c is updated by XOR-ing it with a shifted version of b
                 }
 
-                System.out.println("Updated c: " + Arrays.toString(c));
+//                System.out.println("Updated c: " + Arrays.toString(c));
 
                 // l is updated whenever a discrepancy d is found and the current polynomial c is adjusted
                 // if a significant discrepancy is found (i.e., l <= N / 2), l is updated to reflect the new increased complexity of the LFSR
@@ -105,7 +105,7 @@ public class LinearCompTest {
                     l = N + 1 - l;
                     m = N;
                     System.arraycopy(t, 0, b, 0, n);
-                    System.out.println("Updated b: " + Arrays.toString(b));
+//                    System.out.println("Updated b: " + Arrays.toString(b));
                 }
             }
             N++;
