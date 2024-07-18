@@ -1,19 +1,18 @@
 package de.edu.lmu.pcg.services;
 
 import de.edu.lmu.pcg.PCG;
-import de.edu.lmu.pcg.SeedMarker;
+import de.edu.lmu.pcg.SeedTypeMarker;
 import de.edu.lmu.pcg.U128;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.ServiceLoader;
 
 /**
  * This interface must be implemented, not inherit, only exactly one 'create' method directly
  */
 public sealed interface PCGCtorService
-        <T extends PCG & SeedMarker<Seed>, Seed extends Number>
+        <T extends PCG & SeedTypeMarker<Seed>, Seed extends Number>
         permits PCGCtorService.SeedU32, PCGCtorService.SeedU64, PCGCtorService.SeedU128, PCGCtorService.SeedCustom
 {
     T create(Seed seed);
@@ -22,10 +21,10 @@ public sealed interface PCGCtorService
     T create(U128 seed);
 
 
-    record PCGCtorServiceDescriptor<T extends PCG & SeedMarker<Seed>, Seed extends Number>
+    record PCGCtorServiceDescriptor<T extends PCG & SeedTypeMarker<Seed>, Seed extends Number>
             (Class<T> cls_PCG, Class<Seed> cls_Seed, PCGCtorService<T, Seed> service) {
 
-        static <T extends PCG & SeedMarker<Seed>, Seed extends Number> PCGCtorServiceDescriptor<T, Seed>
+        static <T extends PCG & SeedTypeMarker<Seed>, Seed extends Number> PCGCtorServiceDescriptor<T, Seed>
         create(PCGCtorService<T, Seed> service, Class<T> cls_PCG, Class<Seed> cls_Seed) {
             return new PCGCtorServiceDescriptor<>(cls_PCG, cls_Seed, service);
         }
@@ -67,7 +66,7 @@ public sealed interface PCGCtorService
     /**
      * {@inheritDoc}
      */
-    non-sealed interface SeedU32<T extends PCG & SeedMarker<Integer>> extends PCGCtorService<T, Integer> {
+    non-sealed interface SeedU32<T extends PCG & SeedTypeMarker<Integer>> extends PCGCtorService<T, Integer> {
         T create(int seed);
 
         @Override
@@ -88,7 +87,7 @@ public sealed interface PCGCtorService
     /**
      * {@inheritDoc}
      */
-    non-sealed interface SeedU64<T extends PCG & SeedMarker<Long>> extends PCGCtorService<T, Long> {
+    non-sealed interface SeedU64<T extends PCG & SeedTypeMarker<Long>> extends PCGCtorService<T, Long> {
         T create(long seed);
 
         @Override
@@ -109,13 +108,13 @@ public sealed interface PCGCtorService
     /**
      * {@inheritDoc}
      */
-    non-sealed interface SeedU128<T extends PCG & SeedMarker<U128>> extends PCGCtorService<T, U128> {
+    non-sealed interface SeedU128<T extends PCG & SeedTypeMarker<U128>> extends PCGCtorService<T, U128> {
         /*@Override
         default Class<U128> getSeedClass() {
             return U128.class;
         }*/
     }
 
-    non-sealed interface SeedCustom<T extends PCG & SeedMarker<Seed>, Seed extends Number> extends PCGCtorService<T, Seed> {}
+    non-sealed interface SeedCustom<T extends PCG & SeedTypeMarker<Seed>, Seed extends Number> extends PCGCtorService<T, Seed> {}
     // </editor-fold>
 }

@@ -13,6 +13,7 @@ import de.edu.lmu.pcg.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class LinearCompTest {
@@ -26,16 +27,15 @@ public class LinearCompTest {
     @MethodSource("rngCtorProvider")
     <T extends PCG> void runLinearCompTestOnIndividual(TestConstructor<T, U128> constructor) {
         // List of PCG versions to test
-        U128 seed = new U128( 123456789,123456789);
+        U128 seed = new U128( 873625184L,873625184L);
         runLinearCompTest(constructor, seed);
 
     }
     private static <T extends PCG>  void runLinearCompTest(TestConstructor<T, U128> constructor, U128 seed) {
-        //noinspection unchecked
         T rng = constructor.create(seed);
 
         // Linear complexity test sizes
-        int[] sizes = {5000};
+        int[] sizes = {5000}; // default 5000
 
         for (int size : sizes) {
             System.out.println("Running LinearComp test for " + rng.getClass().getSimpleName() + " with size " + size);
@@ -49,59 +49,91 @@ public class LinearCompTest {
         int advance = rng.bitesPerIteration() / 32;
         int i = 0;
         for (; i < size; i += advance) {
-            rng.fillInto(sequence, i, advance);
+            rng.fillOnceInto(sequence, i, advance);
         }
         //deal with corner case of size not being divisible by advance
         if (i > size) {
-            rng.fillInto(sequence, i - advance, i - size);
+            rng.fillOnceInto(sequence, i - advance, i - size);
         }
 
-
-        // Perform the linear complexity test on the sequence
+        // perform linear complexity test on sequence
         int linearComplexity = calculateLinearComplexity(sequence);
+        System.out.println("Generated sequence for " + rng.getClass().getSimpleName() + ": " + Arrays.toString(sequence));
         System.out.println("Linear complexity for size " + size + ": " + linearComplexity);
-        if (linearComplexity < 10) { // TODO: adjust value
+        if (linearComplexity < 10) {
             throw new RuntimeException("Linear complexity less than 10: " + linearComplexity);
         } else {
             System.out.println("SUCCESS!");
         }
     }
 
-    // TODO: this is wrong, delete and manually rewrite
+    // Berlekamp-Massey algorithm for linear complexity of a binary sequence
+    // Linear complexity = length of the shortest linear feedback shift register (LFSR) that can generate a given sequence
+
     private static int calculateLinearComplexity(int[] sequence) {
         int n = sequence.length;
+        System.out.println("Generated sequence: " + Arrays.toString(sequence));
         int[] b = new int[n];
         int[] c = new int[n];
         int[] t = new int[n];
 
-        b[0] = 1;
-        c[0] = 1;
+        // updating the polynomials that define the minimal linear feedback shift register (LFSR) for the sequence
+        b[0] = 1; // backup polynomial; stores backup copy of c from the last time the LFSR length was updated
+        c[0] = 1; // current polynomial
 
         int l = 0;
         int m = -1;
-        int N = 0;
+        int N = 0; // current position in sequence
 
+        // critical part where d is updated
         while (N < n) {
             int d = sequence[N];
+            System.out.println("Initial d: " + d);
             for (int i = 1; i <= l; i++) {
+                // ^ (bitwise XOR) copies the bit if it is set in one operand but not both
                 d ^= c[i] * sequence[N - i];
             }
 
-            if (d == 1) {
+            System.out.println("N = " + N + ", initial d = " + sequence[N] + ", updated d = " + d);
+            // System.out.println("c array: " + Arrays.toString(c));
+
+            if (d != 0) { // discrepancy d is found
+
+                System.out.println("Updating c and possibly b");
+
                 System.arraycopy(c, 0, t, 0, n);
                 for (int i = 0; i < n - (N - m); i++) {
                     c[N - m + i] ^= b[i];
+                    // when a discrepancy d is detected, c is updated by XOR-ing it with a shifted version of b
                 }
 
-                if (l <= N / 2) {
+                System.out.println("Updated c: " + Arrays.toString(c));
+
+                // l is updated whenever a discrepancy d is found and the current polynomial c is adjusted
+                // if a significant discrepancy is found (i.e., l <= N / 2), l is updated to reflect the new increased complexity of the LFSR
+                // if (l <= N / 2) { // original
+                if (l <= N / 2 + (Math.random() - 0.5) * N / 10) { // adding some randomization to the threshold
                     l = N + 1 - l;
                     m = N;
                     System.arraycopy(t, 0, b, 0, n);
+                    System.out.println("Updated b: " + Arrays.toString(b));
                 }
             }
+            // System.out.println("N = " + N + ", l = " + l + ", sequence[N] = " + sequence[N]);
             N++;
         }
         return l;
     }
 
+
+    // right now linear complexity is always half the sequence size that's been tested
+    // -> sequences generated by the RNGs are not particularly complex
+
+    // Linear Feedback Shift Register (LFSR): shift register whose input bit is a linear function (typically XOR) of its previous state
+    // LC of a sequence = length of the LFSR that can generate that sequence
+
+    // LC of 50 =  it would take an LFSR with 50 stages to produce that particular sequence
 }
+    // show sketch on white board
+
+// CODE REVIEW: only explain critical parts of code in detail!

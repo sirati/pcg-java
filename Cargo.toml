@@ -1,0 +1,14 @@
+
+[package]
+name = "pcg_test_crush"
+version = "0.1.0"
+edition = "2021"
+
+
+[lib]
+crate-type = ["cdylib"]
+path = "./src/crush/rust/lib.rs"
+
+[dependencies]
+testu01 = { git = "https://github.com/dzamlo/rust-testu01.git" }
+rand_core = "0.6.4"

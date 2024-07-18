@@ -2,7 +2,7 @@ package de.edu.lmu.pcg;
 
 import de.edu.lmu.pcg.services.PCGCtorService;
 
-public class PCG_RXS_M_XS_32 implements PCGInt, SeedMarker<Integer> {
+public class PCG_RXS_M_XS_32 implements PCGInt, SeedTypeMarker<Integer> {
     public static class CtorService implements PCGCtorService.SeedU32<PCG_RXS_M_XS_32> {
         @Override
         public PCG_RXS_M_XS_32 create(int seed) {

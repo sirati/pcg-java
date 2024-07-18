@@ -1,5 +1,7 @@
 package de.edu.lmu.pcg;
 
+import java.nio.ByteBuffer;
+
 public interface PCG  {
     void skipLong(long ulong);
     void skip(int uint);
@@ -11,6 +13,15 @@ public interface PCG  {
      * @param start
      * @param max
      */
-    void fillInto(int[] arr, int start, int max);
+    void fillOnceInto(int[] arr, int start, int max);
+
+    /**
+     *
+     * @param byteBuffer remaining space must be aligned to bytesPerIteration
+     */
+    void fill(ByteBuffer byteBuffer);
     int bitesPerIteration();
+    default int bytesPerIteration() {
+        return bitesPerIteration() / 8;
+    }
 }

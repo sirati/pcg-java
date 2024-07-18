@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id "me.champeau.jmh" version "0.7.2"
 }
 
 group = 'de.edu.lmu'
@@ -9,23 +10,71 @@ repositories {
     mavenCentral()
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
 
 dependencies {
-    implementation files('libs/ssj-3.3.1.jar')
-    implementation 'ca.umontreal.iro.simul:ssj:3.3.0'
+    /*implementation files('libs/ssj-3.3.1.jar')*/
+    testImplementation 'ca.umontreal.iro.simul:ssj:3.3.0'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+
 test {
     useJUnitPlatform()
 }
+
+sourceSets {
+    crush {
+        java {
+            srcDirs = ['src/crush/java']
+        }
+        resources {
+            srcDirs = ['src/crush/resources']
+        }
+    }
+}
+
+configurations {
+    crushImplementation.extendsFrom testImplementation
+    crushRuntimeOnly.extendsFrom testRuntimeOnly
+
+}
+
+dependencies {
+    // Add dependencies for crush tests if any
+    crushImplementation 'junit:junit:4.13.2'
+
+    //crushTest need access to main
+    crushImplementation sourceSets.main.output
+    crushRuntimeOnly sourceSets.main.runtimeClasspath
+    //crushTest need access to test
+    crushImplementation sourceSets.test.output
+    crushRuntimeOnly sourceSets.test.runtimeClasspath
+}
+
+task crushTest(type: Test) {
+    description = 'Runs the crush tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.crush.output.classesDirs
+    classpath = sourceSets.crush.runtimeClasspath
+
+
+    // Set the JVM system property to point to the native library directory
+    //systemProperty 'java.library.path', file('target/release')
+    jvmArgs = ['--enable-preview', '--enable-native-access=ALL-UNNAMED']
+}
+
+check.dependsOn crushTest
+
+tasks.withType(JavaCompile).each {
+    it.options.compilerArgs.add('--enable-preview')
+}
+
+
+
 
 /*tasks.register('runLinearComp', JavaExec) {
     group = 'application'
