@@ -18,7 +18,8 @@ public class PCG_XSH_RR implements PCGInt, SeedTypeMarker<Long> {
     }
 
     public PCG_XSH_RR(long seed) {
-        this.state = seed;
+        this.state = Util.newLongState(0) + seed;
+        newState();
     }
 
     @Override
