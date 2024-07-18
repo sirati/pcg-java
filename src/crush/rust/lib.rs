@@ -1,7 +1,7 @@
-#![feature(core_intrinsics)]
+//#![feature(core_intrinsics)]
 
 use std::ffi::CString;
-use rand_core::{RngCore, impls, le};
+use rand_core::{RngCore, impls};
 use testu01::unif01::{Unif01Gen, Unif01Pair};
 
 //creates struct that contains to int segments each 32mb long.
@@ -14,9 +14,9 @@ pub extern "C" fn create_exchange_adapter_lib_pcg_crush(
     page_exhausted: extern "C" fn(x: u32) -> u32,
 ) -> *mut ExchangeAdapter {
     let adapter = Box::new(ExchangeAdapter {
-        pageLower: page_lower,
-        pageUpper: page_upper,
-        currentPage: CurrentPage::Lower,
+        page_lower: unsafe {&mut *page_lower},
+        page_upper: unsafe {&mut *page_upper},
+        current_page: CurrentPage::Lower,
         current_index: 0,
         page_exhausted,
     });
@@ -37,7 +37,7 @@ pub extern "C" fn destroy_exchange_adapter_lib_pcg_crush(adapter: *mut ExchangeA
 
 fn write_internal_state(gen: &mut ExchangeAdapter) {
     println!(
-        "currently not supporter. current_index: {}, page: {:?}", gen.current_index, gen.currentPage
+        "currently not supporter. current_index: {}, page: {:?}", gen.current_index, gen.current_page
     )
 }
 
@@ -75,10 +75,10 @@ pub extern "C" fn launch_small_lib_pcg_crush(adapter: *mut ExchangeAdapter) {
     testu01::battery::small_crush(&mut unif01);
 }
 
-fn to_unif01<F: FnMut(&mut ExchangeAdapter)>(mut adapter: ExchangeAdapter, f: F) -> Unif01Gen<Unif01Pair<ExchangeAdapter, F>> {
+fn to_unif01<F: FnMut(&mut ExchangeAdapter)>(adapter: ExchangeAdapter, f: F) -> Unif01Gen<Unif01Pair<ExchangeAdapter, F>> {
     //print the first 16 int in hex format separated by space
     for i in 0..16 {
-        print!("{:08x} ", unsafe { (*adapter.pageLower)[i] });
+        print!("{:08x} ", adapter.page_lower[i]);
     }
     println!();
     let name = "java_adapter";
@@ -90,15 +90,15 @@ fn to_unif01<F: FnMut(&mut ExchangeAdapter)>(mut adapter: ExchangeAdapter, f: F)
 }
 
 #[derive(Debug)]
-enum CurrentPage {
+pub enum CurrentPage {
     Lower,
     Upper,
 }
 
 pub struct ExchangeAdapter {
-    pub pageLower: *mut [u32; 64 / 2 / 4 * 1024 * 1024],
-    pub pageUpper: *mut [u32; 64 / 2 / 4 * 1024 * 1024],
-    pub currentPage: CurrentPage,
+    pub page_lower: &'static mut [u32; 64 / 2 / 4 * 1024 * 1024], //todo make this an &mut this should be fine!
+    pub page_upper: &'static mut [u32; 64 / 2 / 4 * 1024 * 1024],
+    pub current_page: CurrentPage,
     pub current_index: usize,
     pub page_exhausted: extern "C" fn(x: u32) -> u32,
 }
@@ -106,23 +106,24 @@ pub struct ExchangeAdapter {
 impl RngCore for ExchangeAdapter {
     #[inline]
     fn next_u32(&mut self) -> u32 {
-        let page = match self.currentPage {
-            CurrentPage::Lower => unsafe { &mut *self.pageLower },
-            CurrentPage::Upper => unsafe { &mut *self.pageUpper },
+        let page = match self.current_page {
+            CurrentPage::Lower => &mut self.page_lower,
+            CurrentPage::Upper => &mut self.page_upper,
         };
 
         let value = page[self.current_index];
         self.current_index += 1;
         if self.current_index == page.len() {
-            self.currentPage = match self.currentPage {
+            self.current_page = match self.current_page {
                 CurrentPage::Lower => CurrentPage::Upper,
                 CurrentPage::Upper => CurrentPage::Lower,
             };
             self.current_index = 0;
-            unsafe {
-                let b: u32 =(self.page_exhausted)(0xdeadbeef);
+            (self.page_exhausted)(0xdeadbeef);
+            /*unsafe {
+                let b: u32 =
                 println!("{:08x}", b);
-            }
+            }*/
         }
         value
     }

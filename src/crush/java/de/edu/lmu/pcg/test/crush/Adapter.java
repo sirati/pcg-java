@@ -11,18 +11,6 @@ import java.nio.file.Path;
 
 @SuppressWarnings("preview")
 public class Adapter implements AutoCloseable {
-    static {
-     /*   //System.loadLibrary("pcg_test_crush");
-        System.out.println(System.mapLibraryName("pcg_test_crush"));
-        //print current working directory
-        System.out.println(System.getProperty("user.dir"));
-        //create path to shared library
-        //Path path = Path.of(System.getProperty("user.dir"), "target", "debug", "libpcg_test_crush.so");
-        Path path = Path.of(System.getProperty("user.dir"), System.mapLibraryName("pcg_test_crush"));
-        //load shared library
-        System.load(path.toString());// Load the shared library e.g. libpcg_test_crush.so*/
-    }
-
     private final Arena arena = Arena.ofShared();
     // 2 times 32 MiB as Int array
     private final SequenceLayout singleRegion = MemoryLayout.sequenceLayout(64 / 2 / 4 * 1024 * 1024, ValueLayout.JAVA_INT);
@@ -111,33 +99,24 @@ public class Adapter implements AutoCloseable {
             }
         });
         t.setName("Filler Thread");
-        //t.start();
+        t.start();
         crushMethod.run();
-            }
+    }
 
     private void fillNextPage() {
         var millis = System.currentTimeMillis();
         System.out.println(STR."Start generating \{isNextGenLowerPage?"lower":"upper"} page (32mebibytes) ");
-        //we start with upper page because lower page is generated in advance
-        //while (!this.isClosed) {
-            pcg.fill((isNextGenLowerPage ? this.lowerPage : this.higherPage).asByteBuffer());
-//            boolean finalIsLowerPage = isLowerPage;
-//            System.out.println(STR."Filled page\{finalIsLowerPage ? "lower" : "higher"}");
-//            this.mutex.criticalSection(ID_GENERATOR,
-//                    () -> {
-//                        pcg.fill((finalIsLowerPage ? this.lowerPage : this.higherPage).asByteBuffer());
-//                        System.out.println(STR."Filled page\{finalIsLowerPage ? "lower" : "higher"}");
-//                    });
-            isNextGenLowerPage = !isNextGenLowerPage;
-        //}
+
+        pcg.fill((isNextGenLowerPage ? this.lowerPage : this.higherPage).asByteBuffer());
+        isNextGenLowerPage = !isNextGenLowerPage;
 
         System.out.println(STR."Finished generating \{isNextGenLowerPage?"lower":"upper"} page (32mebibytes) took \{System.currentTimeMillis() - millis}ms");
     }
 
     private int nativeCallbackNext(int b) {
         System.out.println(STR."Finished crush on one section, took \{System.currentTimeMillis() - consumerMillis}ms");
-        fillNextPage();
-        //mutex.wait(ID_CRUSH);
+        //fillNextPage();
+        mutex.wait(ID_CRUSH);
         consumerMillis = System.currentTimeMillis();
 
         return b + 1;
