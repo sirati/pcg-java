@@ -72,15 +72,6 @@ public final class Util {
 
         long newState = (a_i * state + offset) % longMod;
 
-        // debugging
-        // System.out.println("a_i: " + a_i);
-        // System.out.println("a_i_minus_1: " + a_i_minus_1);
-        // System.out.println("inverse_a_minus_1: " + inverse_a_minus_1);
-        // System.out.println("factor: " + factor);
-        // System.out.println("offset: " + offset);
-        // System.out.println("newState: " + newState);
-
-        // new state
         return newState;
     }
 
@@ -102,15 +93,6 @@ public final class Util {
 
         int newState = (a_i * state + offset) % intMod;
 
-        // debugging
-        // System.out.println("a_i: " + a_i);
-        // System.out.println("a_i_minus_1: " + a_i_minus_1);
-        // System.out.println("inverse_a_minus_1: " + inverse_a_minus_1);
-        // System.out.println("factor: " + factor);
-        // System.out.println("offset: " + offset);
-        // System.out.println("newState: " + newState);
-
-        // new state
         return newState;
     }
 
