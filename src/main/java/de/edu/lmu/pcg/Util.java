@@ -117,18 +117,18 @@ public final class Util {
         return newState;
     }
 
-    public static void main(String[] args) {
-        long initialLongState = 42L;
-        long skipStepsLong = 10L;
+    public static void printConstant(String[] args) {
+        //log all consts for debugging
+        System.out.println("longMultiplier: " + longMultiplier);
+        System.out.println("longIncrement: " + longIncrement);
+        System.out.println("longMod: " + longMod);
+        System.out.println("intMultiplier: " + intMultiplier);
+        System.out.println("intIncrement: " + intIncrement);
+        System.out.println("intMod: " + intMod);
+        System.out.println("bigMultiplier: " + bigMultiplier);
+        System.out.println("bigIncrement: " + bigIncrement);
+        System.out.println("bigModulus: " + bigModulus);
 
-        int initialIntState = 42;
-        int skipStepsInt = 10;
-
-        long newLongState = Util.skipLong(initialLongState, skipStepsLong);
-        int newIntState = Util.skip(initialIntState, skipStepsInt);
-
-        System.out.println("New long state after skipping: " + newLongState);
-        System.out.println("New int state after skipping: " + newIntState);
     }
 
     public static int newIntState(int state) {
