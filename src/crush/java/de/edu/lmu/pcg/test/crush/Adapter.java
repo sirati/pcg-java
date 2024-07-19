@@ -31,9 +31,11 @@ public class Adapter implements AutoCloseable {
     private final PCG pcg;
     private boolean isNextGenLowerPage = false;
     private long consumerMillis;
+    private final boolean generate_in_separate_thread;
 
-    public Adapter(PCG pcg) {
+    public Adapter(PCG pcg, boolean generate_in_separate_thread) {
         this.pcg = pcg;
+        this.generate_in_separate_thread = generate_in_separate_thread;
         MethodHandle callbackNext;
         try {
             callbackNext = MethodHandles.lookup()
@@ -72,17 +74,17 @@ public class Adapter implements AutoCloseable {
     }
 
     public static void smallCrush(PCG pcg) {
-        try (Adapter adapter = new Adapter(pcg)) {
+        try (Adapter adapter = new Adapter(pcg, true)) {
             Adapter.runAnyCrush(adapter, adapter::small_Crush);
         }
     }
     public static void mediumCrush(PCG pcg) {
-        try (Adapter adapter = new Adapter(pcg)) {
+        try (Adapter adapter = new Adapter(pcg, true)) {
             Adapter.runAnyCrush(adapter, adapter::medium_Crush);
         }
     }
     public static void bigCrush(PCG pcg) {
-        try (Adapter adapter = new Adapter(pcg)) {
+        try (Adapter adapter = new Adapter(pcg, true)) {
             Adapter.runAnyCrush(adapter, adapter::big_Crush);
         }
     }
@@ -93,14 +95,16 @@ public class Adapter implements AutoCloseable {
         System.out.println(STR."PID: \{ProcessHandle.current().pid()}");
 
         adapter.fillNextPage();
-        Thread t = new Thread(() -> {
-            while (!adapter.isClosed) {
-                adapter.mutex.criticalSection(ID_GENERATOR, adapter::fillNextPage);
-            }
-        });
-        t.setName("Filler Thread");
-        t.start();
-        crushMethod.run();
+        if (adapter.generate_in_separate_thread) {
+            Thread t = new Thread(() -> {
+                while (!adapter.isClosed) {
+                    adapter.mutex.criticalSection(ID_GENERATOR, adapter::fillNextPage);
+                }
+            });
+            t.setName("Filler Thread");
+            t.start();
+        }
+                crushMethod.run();
     }
 
     private void fillNextPage() {
@@ -115,8 +119,11 @@ public class Adapter implements AutoCloseable {
 
     private int nativeCallbackNext(int b) {
         System.out.println(STR."Finished crush on one section, took \{System.currentTimeMillis() - consumerMillis}ms");
-        //fillNextPage();
-        mutex.wait(ID_CRUSH);
+        if (generate_in_separate_thread) {
+            mutex.wait(ID_CRUSH);
+        } else {
+            fillNextPage();
+        }
         consumerMillis = System.currentTimeMillis();
 
         return b + 1;

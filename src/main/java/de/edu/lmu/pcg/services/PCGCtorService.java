@@ -1,9 +1,6 @@
 package de.edu.lmu.pcg.services;
 
-import de.edu.lmu.pcg.PCG;
-import de.edu.lmu.pcg.PCGImplementationVariant;
-import de.edu.lmu.pcg.SeedTypeMarker;
-import de.edu.lmu.pcg.U128;
+import de.edu.lmu.pcg.*;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -14,7 +11,7 @@ import java.util.ServiceLoader;
  */
 public sealed interface PCGCtorService
         <T extends PCG & SeedTypeMarker<Seed>, Seed extends Number>
-        permits PCGCtorService.SeedU32, PCGCtorService.SeedU64, PCGCtorService.SeedU128, PCGCtorService.SeedCustom
+        permits PCGCtorService.NativeProvidedImpl, PCGCtorService.SeedCustom, PCGCtorService.SeedU128, PCGCtorService.SeedU32, PCGCtorService.SeedU64, PCGCtorService.Vectorized
 {
     T create(Seed seed);
     //not needed as long at the contract that Ctor must directly impl ONE method with parameter type == Seed is kept
@@ -121,5 +118,19 @@ public sealed interface PCGCtorService
     }
 
     non-sealed interface SeedCustom<T extends PCG & SeedTypeMarker<Seed>, Seed extends Number> extends PCGCtorService<T, Seed> {}
+    non-sealed interface Vectorized<T extends PCG & SeedTypeMarker<Seed> & PCGNative<MemorySegment>, Seed extends Number, MemorySegment> extends PCGCtorService<T, Seed> {
+        @Override
+        default PCGImplementationVariant getImplementationVariant() {
+            return PCGImplementationVariant.JavaVectoring;
+        }
+    }
+    non-sealed interface NativeProvidedImpl<T extends PCG & SeedTypeMarker<Seed> & PCGNative<MemorySegment>, Seed extends Number, MemorySegment> extends PCGCtorService<T, Seed> {
+        @Override
+        default PCGImplementationVariant getImplementationVariant() {
+            return PCGImplementationVariant.NativeProvided;
+        }
+    }
+
+
     // </editor-fold>
 }

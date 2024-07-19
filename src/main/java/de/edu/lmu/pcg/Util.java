@@ -7,14 +7,14 @@ public final class Util {
     private Util() {
     }
 
-    public static final long multiplierHigh = 2549297995355413924L;
-    public static final long multiplierLow = 4865540595714422341L;
-    public static final BigInteger bigMultiplier = BigInteger.valueOf(multiplierHigh).shiftLeft(64)
-            .or(BigInteger.valueOf(multiplierLow));
-    public static final long incrementHigh = 6364136223846793005L;
-    public static final long incrementLow = 1442695040888963407L;
-    public static final BigInteger bigIncrement = BigInteger.valueOf(incrementHigh).shiftLeft(64)
-            .or(BigInteger.valueOf(incrementLow));
+    public static final long u128MultiplierHigh = 2549297995355413924L;
+    public static final long u128MultiplierLow = 4865540595714422341L;
+    public static final BigInteger u128Multiplier = BigInteger.valueOf(u128MultiplierHigh).shiftLeft(64)
+            .or(BigInteger.valueOf(u128MultiplierLow));
+    public static final long u128IncrementHigh = 6364136223846793005L;
+    public static final long u128IncrementLow = 1442695040888963407L;
+    public static final BigInteger u128Increment = BigInteger.valueOf(u128IncrementHigh).shiftLeft(64)
+            .or(BigInteger.valueOf(u128IncrementLow));
     public static final BigInteger bigModulus = BigInteger.ONE.shiftLeft(127);
 
     public static final long longMultiplier = 6364136223846793005L;
@@ -89,18 +89,18 @@ public final class Util {
     public static BigInteger skip128(BigInteger state, long steps) {
         BigInteger _steps = BigInteger.valueOf(steps);
         // a^i % m
-        BigInteger a_i = bigMultiplier.modPow(_steps, bigModulus);
+        BigInteger a_i = u128Multiplier.modPow(_steps, bigModulus);
 
         // (a^i - 1) % m
         BigInteger a_i_minus_1 = a_i.subtract(BigInteger.ONE).add(bigModulus).mod(bigModulus);
 
         // modular multiplicative inverse of (a - 1) % m
-        BigInteger a_minus_1 = (bigMultiplier.subtract(BigInteger.ONE).add(bigModulus)).mod(bigModulus);
+        BigInteger a_minus_1 = (u128Multiplier.subtract(BigInteger.ONE).add(bigModulus)).mod(bigModulus);
         BigInteger inverse_a_minus_1 = a_minus_1.modInverse(bigModulus);
 
         // c * (a^i - 1) / (a - 1) % m
         BigInteger factor = (a_i_minus_1.multiply(inverse_a_minus_1)).mod(bigModulus);
-        BigInteger offset = (bigIncrement.multiply(factor)).mod(bigModulus);
+        BigInteger offset = (u128Increment.multiply(factor)).mod(bigModulus);
 
         BigInteger newState = (a_i.multiply(state).add(offset)).mod(bigModulus);
 
@@ -118,8 +118,8 @@ public final class Util {
     }
 
     public static BigInteger new128State(BigInteger state) {
-        BigInteger multiplied = state.multiply(bigMultiplier).mod(bigModulus);
-        return (multiplied.add(bigIncrement)).mod(bigModulus);
+        BigInteger multiplied = state.multiply(u128Multiplier).mod(bigModulus);
+        return (multiplied.add(u128Increment)).mod(bigModulus);
     }
 
     public static Class<?> toWrapperClass(Class<?> primitiveClass) {

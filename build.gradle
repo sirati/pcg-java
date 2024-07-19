@@ -85,10 +85,46 @@ task crushTest(type: Test) {
 
 check.dependsOn crushTest
 
-tasks.withType(JavaCompile).each {
+tasks.withType(JavaCompile).matching {
+    it.name == 'compileVector21Java' || it.name == 'compileCrushJava'
+}.configureEach {
     it.options.compilerArgs.add('--enable-preview')
 }
+tasks.withType(JavaCompile).matching {
+    it.name == 'compileVector21Java'
+}.configureEach {
+    it.options.compilerArgs  += ['--add-modules', 'jdk.incubator.vector']
+}
 
+
+tasks.withType(Test) {
+    jvmArgs += ['--add-modules', 'jdk.incubator.vector']
+}
+
+task vector21testmainrun(type: JavaExec) {
+    group = 'application'
+    description = 'Runs the TestMain class with vector incubator module enabled'
+    classpath = sourceSets.vector21.runtimeClasspath
+    mainClass.set('de.edu.lmu.pcg.impl.vector.preview21.TestMain')
+    jvmArgs = ['--enable-preview', '--add-modules', 'jdk.incubator.vector']
+}
+
+/*tasks.named('run', JavaExec) {
+    jvmArgs += ['--add-modules', 'jdk.incubator.vector']
+}*/
+
+
+//add preview to compileVector21
+
+//add preview to runVector21
+tasks.withType(JavaExec).matching {
+    it.name == 'runVector21'
+}.all {
+    jvmArgs = ['--enable-preview']
+}
+
+
+//add
 
 
 
