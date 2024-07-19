@@ -12,7 +12,7 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     }
     private static final BigInteger MASK_128 = new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", 16);
     private static final BigInteger MASK_64 = new BigInteger("FFFFFFFFFFFFFFFF", 16);
-    private BigInteger state;
+    protected BigInteger state;
 
 
 

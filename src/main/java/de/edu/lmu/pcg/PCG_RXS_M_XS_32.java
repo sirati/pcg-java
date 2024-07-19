@@ -12,7 +12,7 @@ public class PCG_RXS_M_XS_32 implements PCGInt, SeedTypeMarker<Integer> {
 
     private static final int MCG_MULTIPLIER = 277803737;
 
-    private int state;
+    protected int state;
 
     public PCG_RXS_M_XS_32(int seed) { this.state = seed; }
 

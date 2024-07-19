@@ -10,7 +10,7 @@ public class PCG_XSH_RS implements PCGInt, SeedTypeMarker<Long> {
         }
     }
 
-    private long state;
+    protected long state;
 
     public static PCG_XSH_RS createFromNumber(Number seed) {
         return new PCG_XSH_RS(seed.longValue());

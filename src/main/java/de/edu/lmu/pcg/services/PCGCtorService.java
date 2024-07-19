@@ -1,6 +1,7 @@
 package de.edu.lmu.pcg.services;
 
 import de.edu.lmu.pcg.PCG;
+import de.edu.lmu.pcg.PCGImplementationVariant;
 import de.edu.lmu.pcg.SeedTypeMarker;
 import de.edu.lmu.pcg.U128;
 
@@ -20,6 +21,10 @@ public sealed interface PCGCtorService
     //Class<Seed> getSeedClass();
     T create(U128 seed);
 
+
+    default PCGImplementationVariant getImplementationVariant() {
+        return PCGImplementationVariant.JavaPrimitive;
+    }
 
     record PCGCtorServiceDescriptor<T extends PCG & SeedTypeMarker<Seed>, Seed extends Number>
             (Class<T> cls_PCG, Class<Seed> cls_Seed, PCGCtorService<T, Seed> service) {

@@ -34,11 +34,24 @@ sourceSets {
             srcDirs = ['src/crush/resources']
         }
     }
+
+    vector21 {
+        java {
+            srcDirs = ['src/vector21/java']
+        }
+        resources {
+            srcDirs = ['src/vector21/resources']
+        }
+    }
 }
 
 configurations {
     crushImplementation.extendsFrom testImplementation
     crushRuntimeOnly.extendsFrom testRuntimeOnly
+
+
+    vector21Implementation.extendsFrom mainImplementation
+    vector21RuntimeOnly.extendsFrom mainRuntimeOnly
 
 }
 
@@ -52,6 +65,9 @@ dependencies {
     //crushTest need access to test
     crushImplementation sourceSets.test.output
     crushRuntimeOnly sourceSets.test.runtimeClasspath
+    //vector extends main
+    vector21Implementation sourceSets.main.output
+    vector21RuntimeOnly sourceSets.main.runtimeClasspath
 }
 
 task crushTest(type: Test) {

@@ -7,23 +7,23 @@ public final class Util {
     private Util() {
     }
 
-    private static final long multiplierHigh = 2549297995355413924L;
-    private static final long multiplierLow = 4865540595714422341L;
-    private static final BigInteger bigMultiplier = BigInteger.valueOf(multiplierHigh).shiftLeft(64)
+    public static final long multiplierHigh = 2549297995355413924L;
+    public static final long multiplierLow = 4865540595714422341L;
+    public static final BigInteger bigMultiplier = BigInteger.valueOf(multiplierHigh).shiftLeft(64)
             .or(BigInteger.valueOf(multiplierLow));
-    private static final long incrementHigh = 6364136223846793005L;
-    private static final long incrementLow = 1442695040888963407L;
-    private static final BigInteger bigIncrement = BigInteger.valueOf(incrementHigh).shiftLeft(64)
+    public static final long incrementHigh = 6364136223846793005L;
+    public static final long incrementLow = 1442695040888963407L;
+    public static final BigInteger bigIncrement = BigInteger.valueOf(incrementHigh).shiftLeft(64)
             .or(BigInteger.valueOf(incrementLow));
-    private static final BigInteger bigModulus = BigInteger.ONE.shiftLeft(127);
+    public static final BigInteger bigModulus = BigInteger.ONE.shiftLeft(127);
 
-    private static final long longMultiplier = 6364136223846793005L;
-    private static final long longIncrement = 1442695040888963407L;
-    private static final long longMod = 1L << 63;
+    public static final long longMultiplier = 6364136223846793005L;
+    public static final long longIncrement = 1442695040888963407L;
+    public static final long longMod = 1L << 63;
 
-    private static final int intMultiplier = 1664525;
-    private static final int intIncrement = 1013904223;
-    private static final int intMod = 1 << 31;
+    public static final int intMultiplier = 1664525;
+    public static final int intIncrement = 1013904223;
+    public static final int intMod = 1 << 31;
 
     // (base^exponent) % modulus
     private static long modExp(long base, long exponent, long modulus) {

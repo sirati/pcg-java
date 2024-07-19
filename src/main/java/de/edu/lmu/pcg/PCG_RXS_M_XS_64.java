@@ -12,7 +12,7 @@ public class PCG_RXS_M_XS_64 implements PCGLong, SeedTypeMarker<Long> {
 
     private static final long MCG_MULTIPLIER = Long.parseUnsignedLong("12605985483714917081");
 
-    private long state;
+    protected long state;
 
     public PCG_RXS_M_XS_64(long seed) {
         this.state = seed;
