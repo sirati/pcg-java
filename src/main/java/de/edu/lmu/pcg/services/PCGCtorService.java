@@ -2,9 +2,12 @@ package de.edu.lmu.pcg.services;
 
 import de.edu.lmu.pcg.*;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This interface must be implemented, not inherit, only exactly one 'create' method directly
@@ -14,8 +17,7 @@ public sealed interface PCGCtorService
         permits PCGCtorService.NativeProvidedImpl, PCGCtorService.SeedCustom, PCGCtorService.SeedU128, PCGCtorService.SeedU32, PCGCtorService.SeedU64, PCGCtorService.Vectorized
 {
     T create(Seed seed);
-    //not needed as long at the contract that Ctor must directly impl ONE method with parameter type == Seed is kept
-    //Class<Seed> getSeedClass();
+    Class<Seed> getSeedClass();
     T create(U128 seed);
 
 
@@ -37,20 +39,33 @@ public sealed interface PCGCtorService
     }
 
     private static Map<Class<? extends PCG>, PCGCtorServiceDescriptor<?, ?>> load_services() {
+
+        ClassLoader service_class_loader;
+        try {
+            service_class_loader = JDKRequirement.load_version_specific();
+        } catch (URISyntaxException | IOException e) {
+            throw new RuntimeException(e);
+        }
         //we load all registered PCG which is located in META-INF/services/de.edu.lmu.pcg.services.PCGCtorService
-        var serviceLoader = ServiceLoader.load(PCGCtorService.class);
+        var serviceLoader = ServiceLoader.load(PCGCtorService.class, service_class_loader);
+
+
         var result = new java.util.HashMap<Class<? extends PCG>, PCGCtorServiceDescriptor<?, ?>>();
         for (var pcg_ctor : serviceLoader) {
             //get method create of impl
             var opt_method_create = Arrays.stream(pcg_ctor.getClass().getMethods())
                     .filter(method -> method.getName().equals("create")
                             && method.getParameterCount() == 1
+                            && !method.getReturnType().isInterface()
                             && method.getDeclaringClass().equals(pcg_ctor.getClass()))
-                    .findAny();
+                    .toList();
             if (opt_method_create.isEmpty()) {
                 throw new RuntimeException("Service must directly impl create method, not inherit it!");
             }
-            var method_create = opt_method_create.get();
+            if (opt_method_create.size() > 1) {
+                throw new RuntimeException("Service must directly impl only one create method, not inherit it!");
+            }
+            var method_create = opt_method_create.getFirst();
             var cls_PCG = method_create.getReturnType();
             var cls_Seed = method_create.getParameterTypes()[0];
             //we need to cast to ungeneric here due to java reflection limitations, that do not support generics
@@ -60,6 +75,11 @@ public sealed interface PCGCtorService
             result.put(desc.cls_PCG, desc);
         }
         return result;
+    }
+
+
+    public static void main(String[] args) throws Exception {
+
     }
 
     public Map<Class<? extends PCG>, PCGCtorService.PCGCtorServiceDescriptor<?, ?>> AVAILABLE_PCGS = PCGCtorService.load_services();
@@ -81,10 +101,10 @@ public sealed interface PCGCtorService
             return create(seed.intValue());
         }
 
-        /*@Override
+        @Override
         default Class<Integer> getSeedClass() {
             return int.class;
-        }*/
+        }
     }
     /**
      * {@inheritDoc}
@@ -102,19 +122,19 @@ public sealed interface PCGCtorService
             return create(seed.longValue());
         }
 
-        /*@Override
+        @Override
         default Class<Long> getSeedClass() {
             return long.class;
-        }*/
+        }
     }
     /**
      * {@inheritDoc}
      */
     non-sealed interface SeedU128<T extends PCG & SeedTypeMarker<U128>> extends PCGCtorService<T, U128> {
-        /*@Override
+        @Override
         default Class<U128> getSeedClass() {
             return U128.class;
-        }*/
+        }
     }
 
     non-sealed interface SeedCustom<T extends PCG & SeedTypeMarker<Seed>, Seed extends Number> extends PCGCtorService<T, Seed> {}

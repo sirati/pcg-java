@@ -1,10 +1,14 @@
 package de.edu.lmu.pcg.impl.vector.preview21;
 
+import de.edu.lmu.pcg.PCGBuilder;
+
 public class TestMain {
 
-    public static final int CAPACITY = 1024;// * 1024;
+    public static final int CAPACITY = 1024* 1024 * 1024;
 
     public static void main(String[] args) {
+        PCGBuilder pcgBuilder = new PCGBuilder();
+
         var pcgManual = new de.edu.lmu.pcg.PCG_XSH_RS(42);
         var pcgVector = new de.edu.lmu.pcg.impl.vector.preview21.PCG_XSH_RS(42);
 

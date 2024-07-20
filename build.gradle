@@ -26,6 +26,12 @@ test {
 }
 
 sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources', file("build/libs/version_specific/jvm/21")]
+        }
+    }
+
     crush {
         java {
             srcDirs = ['src/crush/java']
@@ -123,14 +129,46 @@ tasks.withType(JavaExec).matching {
     jvmArgs = ['--enable-preview']
 }
 
+task vector21Jar(type: Jar) {
+    archiveClassifier.set('vector21')
+    from sourceSets.vector21.output
+}
 
-//add
-
-
-
-/*tasks.register('runLinearComp', JavaExec) {
-    group = 'application'
-    mainClass = 'de.edu.lmu.LinearComp'
-    classpath = sourceSets.main.runtimeClasspath
+/*jar {
+    dependsOn vector21Jar
+    from { vector21Jar } {
+        into 'libs/version_specific/jvm/21'
+    }
 }*/
+
+
+task copyVersionSpecificJarToResources(type: Copy) {
+    from vector21Jar.archiveFile
+    into getLayout().getBuildDirectory().dir("./resources/main/libs/version_specific/jvm/21/")
+}
+//here we have to be a bit tricky, because technically compiling the version specific jar depends on main classes
+//however the jar artifact itself does not include the main classes or resources so we can create the jar after
+// and ensure it is added to be resources of main before any execution starts/the main artifact is build
+copyVersionSpecificJarToResources.dependsOn vector21Jar
+jar.dependsOn copyVersionSpecificJarToResources
+compileJava.finalizedBy copyVersionSpecificJarToResources
+var indirectDependencyOfCopyVSJar = ["compileJava", "processResources", "classes", "compileVector21Java", "processVector21Resources", "vector21Classes", "vector21Jar", "copyVersionSpecificJarToResources"]
+
+tasks.matching { !indirectDependencyOfCopyVSJar.contains(it.name) }.configureEach {
+    mustRunAfter copyVersionSpecificJarToResources
+}
+
+gradle.taskGraph.whenReady {taskGraph ->
+    println "Printing Planned Tasks Execution Order with causing dependencies"
+    taskGraph.getAllTasks().eachWithIndex{ task, n ->
+        println "${n + 1} $task"
+        task.dependsOn.eachWithIndex{ depObj, m ->
+            println "  ${ m + 1 } $depObj"
+        }
+    }
+}
+
+
+
+
 
