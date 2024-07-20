@@ -2,6 +2,7 @@ package de.edu.lmu.pcg.impl.vector.preview21;
 
 import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.LongVector;
+import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorSpecies;
 
 
@@ -31,6 +32,7 @@ public final class Util {
     public static final VectorSpecies<Long> LONG_SPECIES = LongVector.SPECIES_PREFERRED;
     public static final int LONG_COUNT = LONG_SPECIES.length();
     public static final int LONG_SIZE =  LONG_COUNT * 8;
+    public static final VectorMask<Integer> L2I = IntVector.SPECIES_PREFERRED.indexInRange(0, LONG_COUNT);
 
     public static final VectorSpecies<Integer> INT_SPECIES = IntVector.SPECIES_PREFERRED;
     public static final int INT_COUNT = INT_SPECIES.length();

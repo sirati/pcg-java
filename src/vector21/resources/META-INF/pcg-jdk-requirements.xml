@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirements>
+    <requirement>
+        <javaVersionMajor>21</javaVersionMajor>
+        <needsPreview>true</needsPreview>
+        <modules>
+            <module>jdk.incubator.vector</module>
+        </modules>
+    </requirement>
+</requirements>

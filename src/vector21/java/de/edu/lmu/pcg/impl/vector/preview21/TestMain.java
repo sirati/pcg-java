@@ -10,8 +10,16 @@ public class TestMain {
 
         var bufferVector = java.nio.ByteBuffer.allocate(CAPACITY);
         var bufferManual = java.nio.ByteBuffer.allocate(CAPACITY);
+
+        //check millis
+        long start = System.currentTimeMillis();
         pcgVector.fill(bufferVector);
+        long end = System.currentTimeMillis();
+        System.out.println("Vectorized took: " + (end - start) + "ms");
+        start = System.currentTimeMillis();
         pcgManual.fill(bufferManual);
+        end = System.currentTimeMillis();
+        System.out.println("Manual took: " + (end - start) + "ms");
 
         //check if bufferVector and bufferManual are equal
        bufferVector.flip();
