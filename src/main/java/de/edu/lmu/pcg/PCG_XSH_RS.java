@@ -17,7 +17,8 @@ public class PCG_XSH_RS implements PCGInt, SeedTypeMarker<Long> {
     }
 
     public PCG_XSH_RS(long seed) {
-        this.state = seed;
+        this.state = Util.newLongState(0) + seed;
+        newState();
     }
 
     @Override
@@ -37,9 +38,9 @@ public class PCG_XSH_RS implements PCGInt, SeedTypeMarker<Long> {
 
     @Override
     public int nextInt() {
-        long xorshift = this.state ^ (this.state >> 22);
-        int randomshift = (int) (this.state >> 61);
+        long xorshift = this.state ^ (this.state >>> 22);
+        int randomshift = (int) (this.state >>> 61);
         newState();
-        return (int) (xorshift >> (22 + randomshift));
+        return (int) (xorshift >>> (22 + randomshift));
     }
 }

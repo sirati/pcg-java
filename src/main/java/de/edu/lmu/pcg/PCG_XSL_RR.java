@@ -21,7 +21,7 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     }
 
     public PCG_XSL_RR(BigInteger seed) {
-        this.state = seed.and(MASK_128); // Ensure initial state is 128-bit
+        this.state = Util.new128State(BigInteger.valueOf(0)).add(seed.and(MASK_128)); // Ensure initial state is 128-bit
     }
 
     @Override
