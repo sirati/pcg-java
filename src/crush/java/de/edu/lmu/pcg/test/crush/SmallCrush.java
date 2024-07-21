@@ -1,6 +1,7 @@
 package de.edu.lmu.pcg.test.crush;
 
 import de.edu.lmu.pcg.*;
+import de.edu.lmu.pcg.services.PCGCtorService;
 import de.edu.lmu.pcg.test.TestConstructor;
 import de.edu.lmu.pcg.test.Util;
 import org.junit.Test;
@@ -21,13 +22,13 @@ public class SmallCrush {
     }
 
 
-    static Stream<TestConstructor<?, U128>> rngCtorProvider() {
+    static Stream<PCGCtorService<?, ?>> rngCtorProvider() {
         return Util.rngCtorProvider();
     }
 
     @ParameterizedTest
     @MethodSource("rngCtorProvider")
-    <T extends PCG> void smallCrush(TestConstructor<T, U128> constructor) {
+    <T extends PCG & SeedTypeMarker<?>> void smallCrush(PCGCtorService<T, ?> constructor) {
         var rnd = new Random();
         var seed =new U128(rnd.nextLong(), rnd.nextLong());
         System.out.println(STR."Seed: \{seed} (0x\{Long.toHexString(seed.hi)}{Long.toHexString(seed.lo)})");

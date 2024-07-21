@@ -28,6 +28,6 @@ public class PCG_RXS_M_XS_32 extends de.edu.lmu.pcg.PCG_RXS_M_XS_32 implements P
 
     @Override
     public void fillSegment(MemorySegment memorySegment, ByteOrder order) {
-
+        throw new UnsupportedOperationException("Not implemented yet. Fallback on naive implementation.");
     }
 }

@@ -29,6 +29,7 @@ public class PCG_XSH_RR extends de.edu.lmu.pcg.PCG_XSH_RR implements PCGVector21
 
     @Override
     public void fillSegment(MemorySegment memorySegment, ByteOrder order) {
+        throw new UnsupportedOperationException("Not implemented yet. Fallback on naive implementation.");
 
     }
 }

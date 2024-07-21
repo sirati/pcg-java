@@ -110,7 +110,7 @@ tasks.withType(JavaCompile).matching {
 tasks.withType(JavaCompile).matching {
     it.name == 'compileVector21Java'
 }.configureEach {
-    it.options.compilerArgs  += ['--add-modules', 'jdk.incubator.vector']
+    it.options.compilerArgs  += ['--add-modules=jdk.incubator.vector']
 }
 
 

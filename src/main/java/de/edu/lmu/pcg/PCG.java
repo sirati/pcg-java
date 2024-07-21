@@ -1,5 +1,7 @@
 package de.edu.lmu.pcg;
 
+import de.edu.lmu.pcg.services.PCGCtorService;
+
 import java.nio.ByteBuffer;
 
 public interface PCG  {
@@ -23,5 +25,10 @@ public interface PCG  {
     int bitesPerIteration();
     default int bytesPerIteration() {
         return bitesPerIteration() / 8;
+    }
+
+
+    default PCGImplementationVariant getImplementationVariant() {
+        return PCGCtorService.AVAILABLE_PCGS.get(this.getClass()).service().getImplementationVariant();
     }
 }

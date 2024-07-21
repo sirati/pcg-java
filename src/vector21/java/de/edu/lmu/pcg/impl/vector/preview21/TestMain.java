@@ -1,16 +1,21 @@
 package de.edu.lmu.pcg.impl.vector.preview21;
 
 import de.edu.lmu.pcg.PCGBuilder;
+import de.edu.lmu.pcg.PCG_XSH_RS;
+
+import static de.edu.lmu.pcg.PCGImplementationVariant.JavaPrimitive;
+import static de.edu.lmu.pcg.PCGImplementationVariant.JavaVectoring;
 
 public class TestMain {
 
     public static final int CAPACITY = 1024* 1024 * 1024;
 
     public static void main(String[] args) {
-        PCGBuilder pcgBuilder = new PCGBuilder();
+        var builder = new PCGBuilder<>().type(PCG_XSH_RS.class).seed(42L);
 
-        var pcgManual = new de.edu.lmu.pcg.PCG_XSH_RS(42);
-        var pcgVector = new de.edu.lmu.pcg.impl.vector.preview21.PCG_XSH_RS(42);
+        var pcgManual = builder.preferred_variant(JavaPrimitive).build();
+        var pcgVector = builder.preferred_variant(JavaVectoring).build();
+        assert pcgManual.getImplementationVariant() != pcgVector.getImplementationVariant();
 
         var bufferVector = java.nio.ByteBuffer.allocate(CAPACITY);
         var bufferManual = java.nio.ByteBuffer.allocate(CAPACITY);

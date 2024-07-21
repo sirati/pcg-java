@@ -5,13 +5,12 @@ import de.edu.lmu.pcg.PCGBuilder;
 import de.edu.lmu.pcg.U128;
 import de.edu.lmu.pcg.services.PCGCtorService;
 
+import java.util.Collection;
 import java.util.stream.Stream;
 
 public class Util {
-    public static Stream<TestConstructor<?, U128>> rngCtorProvider() {
-        return PCGCtorService.AVAILABLE_PCGS.values().stream()
-                .map(desc -> new PCGBuilder<>().type(desc.cls_PCG()))
-                .map(builder -> (TestConstructor<PCG, U128>) number
-                        -> builder.seedFromU128(number).build());
+    public static Stream<PCGCtorService<?, ?>> rngCtorProvider() {
+        return (/*(Collection<PCGCtorService<?, ?>>)(Collection)*/PCGCtorService.AVAILABLE_PCGS.values())
+                .stream().map(PCGCtorService.PCGCtorServiceDescriptor::service);
     }
 }

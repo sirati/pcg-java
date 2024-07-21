@@ -38,7 +38,7 @@ public sealed interface PCGCtorService
         }
     }
 
-    private static Map<Class<? extends PCG>, PCGCtorServiceDescriptor<?, ?>> load_services() {
+    private static Map<Class<? extends PCG>, PCGImplementationVariant.PrioMap> load_services() {
 
         ClassLoader service_class_loader;
         try {
@@ -50,7 +50,7 @@ public sealed interface PCGCtorService
         var serviceLoader = ServiceLoader.load(PCGCtorService.class, service_class_loader);
 
 
-        var result = new java.util.HashMap<Class<? extends PCG>, PCGCtorServiceDescriptor<?, ?>>();
+        var result = new java.util.HashMap<Class<? extends PCG>, PCGImplementationVariant.PrioMap>();
         for (var pcg_ctor : serviceLoader) {
             //get method create of impl
             var opt_method_create = Arrays.stream(pcg_ctor.getClass().getMethods())
@@ -70,9 +70,14 @@ public sealed interface PCGCtorService
             var cls_Seed = method_create.getParameterTypes()[0];
             //we need to cast to ungeneric here due to java reflection limitations, that do not support generics
             //but still return a class<?>
-            //noinspection unchecked,rawtypes
-            var desc = PCGCtorServiceDescriptor.create(pcg_ctor, (Class)cls_PCG, (Class)cls_Seed);
-            result.put(desc.cls_PCG, desc);
+
+            var parent_class = (Class)cls_PCG;
+            while (parent_class != Object.class) {
+                result.computeIfAbsent(parent_class, pcg -> new PCGImplementationVariant.PrioMap())
+                        .put(pcg_ctor.getImplementationVariant(), PCGCtorServiceDescriptor.create(pcg_ctor, parent_class, (Class)cls_Seed));
+                parent_class = parent_class.getSuperclass();
+            }
+            AVAILABLE_PCGS.put((Class)cls_PCG, PCGCtorServiceDescriptor.create(pcg_ctor, (Class)cls_PCG, (Class)cls_Seed));
         }
         return result;
     }
@@ -82,7 +87,8 @@ public sealed interface PCGCtorService
 
     }
 
-    public Map<Class<? extends PCG>, PCGCtorService.PCGCtorServiceDescriptor<?, ?>> AVAILABLE_PCGS = PCGCtorService.load_services();
+    public Map<Class<? extends PCG>, PCGCtorService.PCGCtorServiceDescriptor<?, ?>> AVAILABLE_PCGS = new HashMap<>();
+    public Map<Class<? extends PCG>, PCGImplementationVariant.PrioMap> AVAILABLE_PCGS_PRIO = PCGCtorService.load_services();
 
     //<editor-fold defaultstate="collapsed" desc="Just writing type to primitive adapters for generic impl">
     /**
