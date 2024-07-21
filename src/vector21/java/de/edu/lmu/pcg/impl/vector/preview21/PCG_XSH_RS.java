@@ -30,24 +30,27 @@ public class PCG_XSH_RS extends de.edu.lmu.pcg.PCG_XSH_RS implements PCGVector21
     }
 
     private void variantFast(MemorySegment into, ByteOrder order) {
-        long alignment = into.address() % LONG_SIZE;
-        long max = (into.byteSize() - alignment) / INT_SIZE * INT_SIZE + alignment;
+        final long LOOP_SIZE = INT_SIZE / 2; //todo: calculate this
+
+        long alignment = into.address() % LOOP_SIZE;
+        long start = (LOOP_SIZE - alignment) % LOOP_SIZE;//todo fix alignment in all other methods
+        long max = (into.byteSize() - alignment) / LOOP_SIZE * LOOP_SIZE + alignment;
 
         if (alignment != 0) {
-            PCG_XSH_RS.super.fill(into.asSlice(0, alignment).asByteBuffer());
+            PCG_XSH_RS.super.fill(into.asSlice(0, start).asByteBuffer());
         }
 
         /*this is placed into its own scope so that we do not forget to save state into this.state*/
         {
             var internalStateArr = new long[LONG_COUNT];
             var state = this.state;
-            for (long segment = alignment; segment < max; segment += INT_SIZE) {
+            for (long segment = start; segment < max; segment += LOOP_SIZE) {
 
 
                 //because there is internal dependency in the state calculation, we need to calculate unvectorized
                 //we need to displace the first element calculation to the end because we start this method with the state already updated
                 internalStateArr[0] = state;
-                for (int i = 1; i < LONG_COUNT; i++) {
+                for (int i = 1; i < internalStateArr.length; i++) {
                     state = newLongState(state);
                     internalStateArr[i] = state;
                 }

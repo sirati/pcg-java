@@ -79,7 +79,9 @@ dependencies {
 
 task crushTest(type: Test) {
     description = 'Runs the crush tests.'
-    group = 'crypto-verification'
+    //group = 'crypto-verification'
+    group = 'verification'
+
 
     testClassesDirs = sourceSets.crush.output.classesDirs
     classpath = sourceSets.crush.runtimeClasspath
@@ -123,7 +125,7 @@ task vector21testmainrun(type: JavaExec) {
     description = 'Runs the TestMain class with vector incubator module enabled'
     classpath = sourceSets.vector21.runtimeClasspath
     mainClass.set('de.edu.lmu.pcg.impl.vector.preview21.TestMain')
-    jvmArgs = ['--enable-preview', '--add-modules', 'jdk.incubator.vector']
+    jvmArgs = ['--enable-preview', '--add-modules=jdk.incubator.vector']
 }
 
 /*tasks.named('run', JavaExec) {
