@@ -11,7 +11,29 @@ import java.math.BigInteger;
 import java.util.Random;
 import java.util.stream.Stream;
 
-public class SmallCrush {
+public class C1_SmallCrush {
+
+
+    @Test
+    public void crush_PCG_RXS_M_XS_32() {
+        Adapter.smallCrush(new PCG_RXS_M_XS_32(42));
+    }
+    @Test
+    public void crush_PCG_RXS_M_XS_64() {
+        Adapter.smallCrush(new PCG_RXS_M_XS_64(42L));
+    }
+    @Test
+    public void crush_PCG_XSH_RR() {
+        Adapter.smallCrush(new PCG_XSH_RR(42));
+    }
+    @Test
+    public void crush_PCG_PCG_XSH_RS() {
+        Adapter.smallCrush(new PCG_XSH_RS(42));
+    }
+    @Test
+    public void crush_PCG_XSL_RR() {
+        Adapter.smallCrush(new PCG_XSL_RR(0, 42));
+    }
 
     @Test
     public void testCrush() {
