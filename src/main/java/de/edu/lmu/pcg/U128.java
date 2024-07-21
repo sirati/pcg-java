@@ -14,7 +14,7 @@ public class U128 extends Number {
     }
 
     public U128(BigInteger value) {
-        this(value.and(MASK_64).longValue(), value.shiftRight(64).and(MASK_64).longValue());
+        this(value.shiftRight(64).and(MASK_64).longValue(), value.and(MASK_64).longValue());
     }
 
     @Override
