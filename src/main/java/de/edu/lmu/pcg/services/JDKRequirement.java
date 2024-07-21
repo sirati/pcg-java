@@ -1,5 +1,10 @@
 package de.edu.lmu.pcg.services;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -7,17 +12,13 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.net.*;
-import java.nio.file.Path;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.jar.JarEntry;
@@ -48,7 +49,8 @@ public class JDKRequirement {
                     File[] jarFiles = folder.listFiles((dir, name) -> name.endsWith(".jar"));
                     if (jarFiles != null) {
                         for (File jarFile : jarFiles) {
-                            if (!verifyJar(new FileInputStream(jarFile), currentJDK)) continue; //if we failed we skip this jar
+                            if (!verifyJar(new FileInputStream(jarFile), currentJDK))
+                                continue; //if we failed we skip this jar
                             jarUrls.add(jarFile.toURI().toURL());
                         }
                     } else {
@@ -70,7 +72,7 @@ public class JDKRequirement {
                         .map(jarEntry -> {
                             try {
                                 //extract the jar entry to a temp file
-                                File tempFile = File.createTempFile("pcg-inner-jar" , new File(jarEntry.getName()).getName());
+                                File tempFile = File.createTempFile("pcg-inner-jar", new File(jarEntry.getName()).getName());
                                 tempFile.deleteOnExit();
                                 try (var is = jarFile.getInputStream(jarEntry);
                                      var os = new FileOutputStream(tempFile)) {
@@ -99,7 +101,7 @@ public class JDKRequirement {
         try (var is = new JarInputStream(jarFile)) {
             //we need to skip till the META-INF/pcg-jdk-requirements.txt entry
             JarEntry entry;
-            for (entry=is.getNextJarEntry(); entry!=null; entry=is.getNextJarEntry()) {
+            for (entry = is.getNextJarEntry(); entry != null; entry = is.getNextJarEntry()) {
                 if (entry.getName().equals("META-INF/pcg-jdk-requirements.xml")) {
                     break;
                 }
@@ -131,6 +133,7 @@ public class JDKRequirement {
             return javaVersionMajor == other.javaVersionMajor &&
                     (!other.preview || preview) && modules.containsAll(other.modules);
         }
+
         public static Requirement fromCurrentJDK() {
             RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
             List<String> jvmArguments = runtimeMXBean.getInputArguments();
@@ -153,14 +156,14 @@ public class JDKRequirement {
 
 
         @Override
-            public String toString() {
-                return "Requirement{" +
-                        "javaVersionMajor=" + javaVersionMajor +
-                        ", preview=" + preview +
-                        ", modules=" + modules +
-                        '}';
-            }
+        public String toString() {
+            return "Requirement{" +
+                    "javaVersionMajor=" + javaVersionMajor +
+                    ", preview=" + preview +
+                    ", modules=" + modules +
+                    '}';
         }
+    }
 
     public static List<Requirement> parseRequirements(InputStream is) throws ParserConfigurationException, IOException, SAXException {
         List<Requirement> requirements = new ArrayList<>();

@@ -2,6 +2,7 @@ package de.edu.lmu.pcg.bench;
 
 import de.edu.lmu.pcg.PCG_RXS_M_XS_32;
 import org.openjdk.jmh.annotations.*;
+
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -39,7 +40,7 @@ public class NaiveToArray {
         }
         int advance = bits / 32; //int:= i32
         //benchmark
-        for (int i = 0; i < array.length; i+=advance) {
+        for (int i = 0; i < array.length; i += advance) {
             pcg.fillOnceInto(array, 0, array.length);
         }
 

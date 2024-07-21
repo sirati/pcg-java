@@ -8,7 +8,7 @@ import static de.edu.lmu.pcg.PCGImplementationVariant.JavaVectoring;
 
 public class TestMain {
 
-    public static final int CAPACITY = 1024* 1024 * 1024 ;
+    public static final int CAPACITY = 1024 * 1024 * 1024;
 
     public static void main(String[] args) {
         var builder = new PCGBuilder<>().type(PCG_XSH_RS.class).seed(42L);

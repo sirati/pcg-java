@@ -48,7 +48,6 @@ public final class Util {
      */
 
 
-
     // DATATYPE INT
     // ============
 
@@ -86,14 +85,13 @@ public final class Util {
         checkPositive(steps);
         int g = (int) modExpInt(intMultiplier, steps);
         int c = (int) modIncInt(intIncrement, intMultiplier, steps);
-        return (state*g + c) % intMod;
+        return (state * g + c) % intMod;
     }
 
     public static int newIntState(int state) {
         //no need for mod as the side of the state is 32 bits, which is automatically a mod 2^32
         return intMultiplier * state + intIncrement;
     }
-
 
 
     //  DATATYPE LONG
@@ -133,14 +131,13 @@ public final class Util {
         checkPositive(steps);
         long g = modExpLong(longMultiplier, steps);
         long c = modIncLong(longIncrement, longMultiplier, steps);
-        return state*g + c;
+        return state * g + c;
     }
 
     public static long newLongState(long state) {
         //no need for mod as the side of the state is 64 bits, which is automatically a mod 2^64
         return longMultiplier * state + longIncrement; // (a * state + offset) % m;
     }
-
 
 
     //  DATATYPE BIGINTEGER

@@ -18,7 +18,7 @@ public class U128Test {
 
     public void newState() {
         long lower = this.stateLower * Util.u128MultiplierLow;
-        long upper = Math.unsignedMultiplyHigh(this.stateLower , Util.u128MultiplierLow)
+        long upper = Math.unsignedMultiplyHigh(this.stateLower, Util.u128MultiplierLow)
                 + this.stateLower * Util.u128MultiplierHigh
                 + this.stateUpper * Util.u128MultiplierLow;
 
@@ -35,7 +35,7 @@ public class U128Test {
     public static void main(String[] args) {
         Random random = new Random();
 
-        for (long i = 0; i < 1024L*1024*1024*16; i++) {
+        for (long i = 0; i < 1024L * 1024 * 1024 * 16; i++) {
             long stateLower = random.nextLong();
             long stateUpper = random.nextLong();
 
@@ -59,7 +59,7 @@ public class U128Test {
 
             if (lowerResult != lowerResult2 || upperResult != upperResult2) {
                 System.err.println("Mismatch at iteration " + i);
-                System.err.println("Expected: " + Long.toString(lowerResult2,  16) + " " + Long.toString(upperResult2, 16));
+                System.err.println("Expected: " + Long.toString(lowerResult2, 16) + " " + Long.toString(upperResult2, 16));
                 System.err.println("Actual  : " + Long.toString(lowerResult, 16) + " " + Long.toString(upperResult, 16));
             }
         }

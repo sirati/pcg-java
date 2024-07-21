@@ -31,6 +31,7 @@ public class PCGBuilder<T_PCG extends PCG & SeedTypeMarker<T_Seed>, T_Seed exten
     PCGCtorService.PCGCtorServiceDescriptor<T_PCG, T_Seed> find(String pcg_name, PCGImplementationVariant preferred_variant) {
         return (PCGCtorService.PCGCtorServiceDescriptor<T_PCG, T_Seed>) ctors_by_name.get(pcg_name).get(preferred_variant);
     }
+
     @SuppressWarnings("unchecked")
     private <T_PCG_NEW extends PCG & SeedTypeMarker<T_Seed_NEW>, T_Seed_NEW extends Number, T_Builder extends PCGBuilder<T_PCG_NEW, T_Seed_NEW>> T_Builder magic() {
         return (T_Builder) this;
@@ -70,7 +71,7 @@ public class PCGBuilder<T_PCG extends PCG & SeedTypeMarker<T_Seed>, T_Seed exten
     }
 
     public class StateConfigured {
-        public  PCGBuilder<T_PCG, T_Seed>.StateConfigured seed(T_Seed seed) {
+        public PCGBuilder<T_PCG, T_Seed>.StateConfigured seed(T_Seed seed) {
             PCGBuilder.this.seed = seed;
             return this;
         }
@@ -83,7 +84,7 @@ public class PCGBuilder<T_PCG extends PCG & SeedTypeMarker<T_Seed>, T_Seed exten
             return this;
         }
 
-        public  PCGBuilder<T_PCG, T_Seed>.StateConfigured seedFromU128(U128 seed) {
+        public PCGBuilder<T_PCG, T_Seed>.StateConfigured seedFromU128(U128 seed) {
             var ma = magic();
             ma.seed = seed;
             return this;

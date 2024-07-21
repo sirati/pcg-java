@@ -48,8 +48,8 @@ public class Adapter implements AutoCloseable {
 
         Path path = Path.of(System.getProperty("user.dir"), "target", "debug", System.mapLibraryName("pcg_test_crush"));
         SymbolLookup stdlib = SymbolLookup.libraryLookup(path, arena);
-        var native_method_addr =  stdlib.find("create_exchange_adapter_lib_pcg_crush").orElseThrow(
-                ()-> new RuntimeException("Unable to find create_exchange_adapter_lib_pcg_crush"));
+        var native_method_addr = stdlib.find("create_exchange_adapter_lib_pcg_crush").orElseThrow(
+                () -> new RuntimeException("Unable to find create_exchange_adapter_lib_pcg_crush"));
         // rust object pointer as result , lower page, upper page, callback pointer
         FunctionDescriptor descriptor = FunctionDescriptor.of(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS/*, ValueLayout.ADDRESS*/);
         MethodHandle nativeFunction = Linker.nativeLinker().downcallHandle(native_method_addr, descriptor);
@@ -68,8 +68,8 @@ public class Adapter implements AutoCloseable {
     }
 
     private static MethodHandle findRustMemberMethod(SymbolLookup stdlib, String fnExportName) {
-        var method_addr =  stdlib.find(fnExportName).orElseThrow(
-                ()-> new RuntimeException(STR."Unable to find \{fnExportName}"));
+        var method_addr = stdlib.find(fnExportName).orElseThrow(
+                () -> new RuntimeException(STR."Unable to find \{fnExportName}"));
         return Linker.nativeLinker().downcallHandle(method_addr, FunctionDescriptor.ofVoid(ValueLayout.ADDRESS));
     }
 
@@ -78,11 +78,13 @@ public class Adapter implements AutoCloseable {
             Adapter.runAnyCrush(adapter, adapter::small_Crush);
         }
     }
+
     public static void mediumCrush(PCG pcg) {
         try (Adapter adapter = new Adapter(pcg, true)) {
             Adapter.runAnyCrush(adapter, adapter::medium_Crush);
         }
     }
+
     public static void bigCrush(PCG pcg) {
         try (Adapter adapter = new Adapter(pcg, true)) {
             Adapter.runAnyCrush(adapter, adapter::big_Crush);
@@ -104,17 +106,17 @@ public class Adapter implements AutoCloseable {
             t.setName("Filler Thread");
             t.start();
         }
-                crushMethod.run();
+        crushMethod.run();
     }
 
     private void fillNextPage() {
         var millis = System.currentTimeMillis();
-        System.out.println(STR."Start generating \{isNextGenLowerPage?"lower":"upper"} page (32mebibytes) ");
+        System.out.println(STR."Start generating \{isNextGenLowerPage ? "lower" : "upper"} page (32mebibytes) ");
 
         pcg.fill((isNextGenLowerPage ? this.lowerPage : this.higherPage).asByteBuffer());
         isNextGenLowerPage = !isNextGenLowerPage;
 
-        System.out.println(STR."Finished generating \{isNextGenLowerPage?"lower":"upper"} page (32mebibytes) took \{System.currentTimeMillis() - millis}ms");
+        System.out.println(STR."Finished generating \{isNextGenLowerPage ? "lower" : "upper"} page (32mebibytes) took \{System.currentTimeMillis() - millis}ms");
     }
 
     private int nativeCallbackNext(int b) {

@@ -33,7 +33,7 @@ test {
 
 sourceSets {
     jarLoadTest {
-         java {
+        java {
             srcDirs = ['src/jar_load_test/java']
         }
     }
@@ -118,7 +118,7 @@ tasks.withType(JavaCompile).matching {
 tasks.withType(JavaCompile).matching {
     it.name == 'compileVector21Java'
 }.configureEach {
-    it.options.compilerArgs  += ['--add-modules=jdk.incubator.vector']
+    it.options.compilerArgs += ['--add-modules=jdk.incubator.vector']
 }
 
 
@@ -161,8 +161,6 @@ tasks.register('vector21Jar', Jar) {
 }*/
 
 
-
-
 //<editor-fold defaultstate="collapsed" desc="Copying Vector21 to Mains resources">
 tasks.register('copyVersionSpecificJarToResources', Copy) {
     from vector21Jar.archiveFile
@@ -199,12 +197,12 @@ tasks.matching { !indirectDependencyOfCopyJarTest.contains(it.name) }.configureE
 //</editor-fold>
 
 
-gradle.taskGraph.whenReady {taskGraph ->
+gradle.taskGraph.whenReady { taskGraph ->
     println "Printing Planned Tasks Execution Order with causing dependencies"
-    taskGraph.getAllTasks().eachWithIndex{ task, n ->
+    taskGraph.getAllTasks().eachWithIndex { task, n ->
         println "${n + 1} $task"
-        task.dependsOn.eachWithIndex{ depObj, m ->
-            println "  ${ m + 1 } $depObj"
+        task.dependsOn.eachWithIndex { depObj, m ->
+            println "  ${m + 1} $depObj"
         }
     }
 }

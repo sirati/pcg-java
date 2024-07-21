@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 public interface PCGInt extends PCG {
     int nextInt();
+
     default int bitsPerIteration() {
         return 32;
     }
@@ -11,7 +12,7 @@ public interface PCGInt extends PCG {
     @Override
     default void fillOnceInto(int[] arr, int start, int max) {
         int next = nextInt();
-        if (max == 0)return;
+        if (max == 0) return;
         arr[start] = next;
     }
 

@@ -1,13 +1,9 @@
 package de.edu.lmu.pcg.impl.vector.preview21;
 
-import de.edu.lmu.pcg.PCGImplementationVariant;
-import de.edu.lmu.pcg.PCGNative;
 import de.edu.lmu.pcg.services.PCGCtorService;
-import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorOperators;
 
 import java.lang.foreign.MemorySegment;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import static de.edu.lmu.pcg.Util.newLongState;

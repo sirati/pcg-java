@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import static de.edu.lmu.pcg.PCGImplementationVariant.JavaPrimitive;
 import static de.edu.lmu.pcg.PCGImplementationVariant.JavaVectoring;
 
 @BenchmarkMode(Mode.AverageTime)

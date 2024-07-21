@@ -19,7 +19,7 @@ public class JarLoadTest {
     //check that PCGCtorService.AVAILABLE_PCGS has 10 and not 5 entries i.e. that vector21 was loaded
     @Test
     public void loadByJarValidateLoading() throws Exception {
-        var url =  JarLoadTest.class.getProtectionDomain().getClassLoader().getResource("libs/pcg.jar");
+        var url = JarLoadTest.class.getProtectionDomain().getClassLoader().getResource("libs/pcg.jar");
         var classloader = new URLClassLoader(new java.net.URL[]{url}, Thread.currentThread().getContextClassLoader());
 
         var classRequirement = classloader.loadClass("de.edu.lmu.pcg.services.JDKRequirement$Requirement");
@@ -32,7 +32,8 @@ public class JarLoadTest {
         //assert that javaVersionMajor == 21, preview = true, modules contains jdk.incubator.vector
         if (javaVersionMajor != 21) throw new AssertionError("javaVersionMajor != 21");
         if (!preview) throw new AssertionError("preview != true");
-        if (!modules.contains("jdk.incubator.vector")) throw new AssertionError("modules does not contain jdk.incubator.vector");
+        if (!modules.contains("jdk.incubator.vector"))
+            throw new AssertionError("modules does not contain jdk.incubator.vector");
 
         //if any of the above fail our test will fail to test correctly
         var classPCGCTorService = classloader.loadClass("de.edu.lmu.pcg.services.PCGCtorService");
@@ -43,7 +44,8 @@ public class JarLoadTest {
         } catch (java.lang.ExceptionInInitializerError e) {
             throw new RuntimeException("That getting the field failed by ExceptionInInitializerError is a strong indicator that this test successfully found the failure case", e);
         }
-        if (AVAILABLE_PCGS.size() != 10) throw new AssertionError("AVAILABLE_PCGS.size() != 10, maybe vector loading failed?");
+        if (AVAILABLE_PCGS.size() != 10)
+            throw new AssertionError("AVAILABLE_PCGS.size() != 10, maybe vector loading failed?");
 
         //check that 5 were loaded from impl.vector.preview21
         if (5 != AVAILABLE_PCGS.keySet().stream().filter(key -> key.getName().contains("impl.vector.preview21")).count())

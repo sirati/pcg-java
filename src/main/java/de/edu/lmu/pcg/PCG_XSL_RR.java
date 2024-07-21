@@ -1,9 +1,8 @@
 package de.edu.lmu.pcg;
+
 import de.edu.lmu.pcg.services.PCGCtorService;
 
 import java.math.BigInteger;
-
-import static de.edu.lmu.pcg.Util.MASK_64;
 
 public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     public static class CtorService implements PCGCtorService.SeedU128<PCG_XSL_RR> {
@@ -12,8 +11,6 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
             return new PCG_XSL_RR(seed);
         }
     }
-
-
 
 
     public static PCG_XSL_RR createFromNumber(Number seed) {
@@ -30,6 +27,7 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
 
     protected long stateLower = Util.u128IncrementLow;
     protected long stateUpper = Util.u128IncrementHigh;
+
     public PCG_XSL_RR(long seedLower, long seedUpper) {
         add(seedUpper, seedLower);
         newState();
@@ -45,7 +43,7 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
 
     private void multiply(long multiplierHigh, long multiplierLow) {
         long resultLower = this.stateLower * multiplierLow;
-        this.stateUpper = Math.unsignedMultiplyHigh(this.stateLower , multiplierLow)
+        this.stateUpper = Math.unsignedMultiplyHigh(this.stateLower, multiplierLow)
                 + this.stateLower * multiplierHigh
                 + this.stateUpper * multiplierLow;
         this.stateLower = resultLower;

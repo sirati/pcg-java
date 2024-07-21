@@ -2,22 +2,23 @@ package de.edu.lmu.pcg.services;
 
 import de.edu.lmu.pcg.*;
 
-import java.io.*;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
+import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  * This interface must be implemented, not inherit, only exactly one 'create' method directly
  */
 public sealed interface PCGCtorService
         <T extends PCG & SeedTypeMarker<Seed>, Seed extends Number>
-        permits PCGCtorService.NativeProvidedImpl, PCGCtorService.SeedCustom, PCGCtorService.SeedU128, PCGCtorService.SeedU32, PCGCtorService.SeedU64, PCGCtorService.Vectorized
-{
+        permits PCGCtorService.NativeProvidedImpl, PCGCtorService.SeedCustom, PCGCtorService.SeedU128, PCGCtorService.SeedU32, PCGCtorService.SeedU64, PCGCtorService.Vectorized {
     T create(Seed seed);
+
     Class<Seed> getSeedClass();
+
     T create(U128 seed);
 
 
@@ -71,13 +72,13 @@ public sealed interface PCGCtorService
             //we need to cast to ungeneric here due to java reflection limitations, that do not support generics
             //but still return a class<?>
 
-            var parent_class = (Class)cls_PCG;
+            var parent_class = (Class) cls_PCG;
             while (parent_class != Object.class) {
                 result.computeIfAbsent(parent_class, pcg -> new PCGImplementationVariant.PrioMap())
-                        .put(pcg_ctor.getImplementationVariant(), PCGCtorServiceDescriptor.create(pcg_ctor, parent_class, (Class)cls_Seed));
+                        .put(pcg_ctor.getImplementationVariant(), PCGCtorServiceDescriptor.create(pcg_ctor, parent_class, (Class) cls_Seed));
                 parent_class = parent_class.getSuperclass();
             }
-            AVAILABLE_PCGS.put((Class)cls_PCG, PCGCtorServiceDescriptor.create(pcg_ctor, (Class)cls_PCG, (Class)cls_Seed));
+            AVAILABLE_PCGS.put((Class) cls_PCG, PCGCtorServiceDescriptor.create(pcg_ctor, (Class) cls_PCG, (Class) cls_Seed));
         }
         return result;
     }
@@ -91,6 +92,7 @@ public sealed interface PCGCtorService
     public Map<Class<? extends PCG>, PCGImplementationVariant.PrioMap> AVAILABLE_PCGS_PRIO = PCGCtorService.load_services();
 
     //<editor-fold defaultstate="collapsed" desc="Just writing type to primitive adapters for generic impl">
+
     /**
      * {@inheritDoc}
      */
@@ -112,6 +114,7 @@ public sealed interface PCGCtorService
             return int.class;
         }
     }
+
     /**
      * {@inheritDoc}
      */
@@ -133,6 +136,7 @@ public sealed interface PCGCtorService
             return long.class;
         }
     }
+
     /**
      * {@inheritDoc}
      */
@@ -143,13 +147,16 @@ public sealed interface PCGCtorService
         }
     }
 
-    non-sealed interface SeedCustom<T extends PCG & SeedTypeMarker<Seed>, Seed extends Number> extends PCGCtorService<T, Seed> {}
+    non-sealed interface SeedCustom<T extends PCG & SeedTypeMarker<Seed>, Seed extends Number> extends PCGCtorService<T, Seed> {
+    }
+
     non-sealed interface Vectorized<T extends PCG & SeedTypeMarker<Seed> & PCGNative<MemorySegment>, Seed extends Number, MemorySegment> extends PCGCtorService<T, Seed> {
         @Override
         default PCGImplementationVariant getImplementationVariant() {
             return PCGImplementationVariant.JavaVectoring;
         }
     }
+
     non-sealed interface NativeProvidedImpl<T extends PCG & SeedTypeMarker<Seed> & PCGNative<MemorySegment>, Seed extends Number, MemorySegment> extends PCGCtorService<T, Seed> {
         @Override
         default PCGImplementationVariant getImplementationVariant() {

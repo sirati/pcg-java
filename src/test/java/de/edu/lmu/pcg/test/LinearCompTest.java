@@ -1,6 +1,8 @@
 package de.edu.lmu.pcg.test;
 
-import de.edu.lmu.pcg.*;
+import de.edu.lmu.pcg.PCG;
+import de.edu.lmu.pcg.SeedTypeMarker;
+import de.edu.lmu.pcg.U128;
 import de.edu.lmu.pcg.services.PCGCtorService;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,11 +21,12 @@ public class LinearCompTest {
     @MethodSource("rngCtorProvider")
     <T extends PCG & SeedTypeMarker<?>> void runLinearCompTestOnIndividual(PCGCtorService<T, ?> constructor) {
         // list of PCG versions to test
-        U128 seed = new U128( 873625184L,873625184L);
+        U128 seed = new U128(873625184L, 873625184L);
         runLinearCompTest(constructor, seed);
 
     }
-    private static <T extends PCG & SeedTypeMarker<?>>  void runLinearCompTest(PCGCtorService<T, ?> constructor, U128 seed) {
+
+    private static <T extends PCG & SeedTypeMarker<?>> void runLinearCompTest(PCGCtorService<T, ?> constructor, U128 seed) {
         T rng = constructor.create(seed);
 
         // linear complexity test sizes
@@ -54,7 +57,7 @@ public class LinearCompTest {
     }
 
     // Berlekamp-Massey algorithm for linear complexity of a binary sequence
-   
+
     private static int calculateLinearComplexity(IntBuffer sequence) {
         int n = sequence.capacity();
 //        System.out.println("Generated sequence: " + Arrays.toString(sequence));
@@ -95,9 +98,9 @@ public class LinearCompTest {
 
                 // l is updated whenever a discrepancy d is found and the current polynomial c is adjusted
                 // if a significant discrepancy is found (i.e., l <= N / 2), l is updated to reflect the new increased complexity of the LFSR
-                
+
                 if (l <= N / 2) { // original
-                // if (l <= N / 2 + (Math.random() - 0.5) * N / 10) { // adding some randomization to the threshold
+                    // if (l <= N / 2 + (Math.random() - 0.5) * N / 10) { // adding some randomization to the threshold
                     l = N + 1 - l;
                     m = N;
                     System.arraycopy(t, 0, b, 0, n);

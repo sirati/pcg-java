@@ -7,7 +7,8 @@ import jdk.incubator.vector.VectorSpecies;
 
 
 public final class Util {
-    private Util() {}
+    private Util() {
+    }
 
     /*
     public static final long u128MultiplierHigh = 2549297995355413924L;
@@ -38,7 +39,7 @@ public final class Util {
     public static final VectorSpecies<Integer> INT_SPECIES = IntVector.SPECIES_PREFERRED;
     public static final byte INT_COUNT = (byte) INT_SPECIES.length();
     public static final short INT_SIZE = (short) (INT_COUNT * (short) 4);
-    public static final byte L2I_REDUCTION_FACTOR = (byte) (INT_COUNT/LONG_COUNT);
+    public static final byte L2I_REDUCTION_FACTOR = (byte) (INT_COUNT / LONG_COUNT);
 
 
     public static final LongVector u128MultiplierLow = LongVector.broadcast(LONG_SPECIES, de.edu.lmu.pcg.Util.u128MultiplierLow);

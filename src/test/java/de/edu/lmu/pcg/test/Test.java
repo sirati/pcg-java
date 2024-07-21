@@ -1,10 +1,12 @@
 package de.edu.lmu.pcg.test;
+
 import de.edu.lmu.pcg.*;
 import de.edu.lmu.pcg.services.PCGCtorService;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.*;
+import java.io.File;
+import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.stream.Stream;
@@ -23,7 +25,7 @@ public class Test {
     @MethodSource("rngCtorProvider")
     <T extends PCG & SeedTypeMarker<?>> void compareCAndJavaResultIndividually(PCGCtorService<T, ?> constructor) throws Exception {
         // list of PCG versions to test
-        U128 seed = new U128( 0,42L);
+        U128 seed = new U128(0, 42L);
 
         var pcgInstance = constructor.create(seed);
         if (pcgInstance instanceof PCGInt) {
@@ -88,9 +90,9 @@ public class Test {
             //output test Results
             System.out.println("For " + name + ":");
             if (failedBytes == 0) {
-                System.out.println("Results are equal!"+ "\n");
+                System.out.println("Results are equal!" + "\n");
             } else {
-                System.out.println("Results are in " + failedBytes + " Bytes not equal."+ "\n");
+                System.out.println("Results are in " + failedBytes + " Bytes not equal." + "\n");
             }
         }
     }
@@ -121,9 +123,9 @@ public class Test {
             //output test Results
             System.out.println("For " + name + ":");
             if (failedBytes == 0) {
-                System.out.println("Results are equal!"+ "\n");
+                System.out.println("Results are equal!" + "\n");
             } else {
-                System.out.println("Results are in " + failedBytes + " Bytes not equal."+ "\n");
+                System.out.println("Results are in " + failedBytes + " Bytes not equal." + "\n");
             }
         }
     }

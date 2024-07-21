@@ -12,14 +12,14 @@
     pacman -S make
     ```
 
-    Check for successful installation with:
+   Check for successful installation with:
     ```sh
     which gcc
     which make
     ```
 
 3. **Set Environment Variable**
-    Add `C:\msys64\mingw64\bin` to `PATH`.
+   Add `C:\msys64\mingw64\bin` to `PATH`.
 
 4. **Install TestU01-1.2.3**
     ```sh
@@ -53,7 +53,7 @@
     ./example.exe
     ```
 
-    Redirect console output to file if necessary:
+   Redirect console output to file if necessary:
     ```sh
     ./example.exe >> output.txt
     ```

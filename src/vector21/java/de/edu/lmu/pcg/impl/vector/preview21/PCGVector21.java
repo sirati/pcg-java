@@ -8,7 +8,8 @@ import java.nio.ByteBuffer;
 
 @SuppressWarnings("preview")
 public interface PCGVector21 extends PCGNative<MemorySegment> {
-    interface Marker<T extends PCG & SeedTypeMarker<Seed> & PCGVector21, Seed extends Number> extends PCGCtorService.Vectorized<T, Seed, MemorySegment> { }
+    interface Marker<T extends PCG & SeedTypeMarker<Seed> & PCGVector21, Seed extends Number> extends PCGCtorService.Vectorized<T, Seed, MemorySegment> {
+    }
 
     @Override
     default void fill(ByteBuffer byteBuffer) {

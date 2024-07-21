@@ -34,7 +34,7 @@ public class NaiveConsume {
         }
         int advance = bits / 8; //int:= i32, so for each i32 advance 4 bytes
         //benchmark
-        for (int i = 0; i < Util.MB32; i+=advance) {
+        for (int i = 0; i < Util.MB32; i += advance) {
             bh.consume(pcg.nextInt());
         }
     }

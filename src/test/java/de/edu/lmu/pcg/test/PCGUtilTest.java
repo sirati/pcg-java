@@ -3,7 +3,6 @@ package de.edu.lmu.pcg.test;
 import de.edu.lmu.pcg.PCG_XSL_RR;
 import de.edu.lmu.pcg.U128;
 import de.edu.lmu.pcg.Util;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -71,7 +70,6 @@ public class PCGUtilTest {
                 new Object[]{new BigInteger("123456789123456789123456789"), -1L}
         );
     }
-
 
 
     // TESTS

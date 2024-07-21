@@ -1,11 +1,13 @@
 package de.edu.lmu.pcg.impl.vector.preview21;
-import jdk.incubator.vector.*;
+
 import de.edu.lmu.pcg.services.PCGCtorService;
+import jdk.incubator.vector.Vector;
+import jdk.incubator.vector.VectorOperators;
 
 import java.lang.foreign.MemorySegment;
 import java.nio.ByteOrder;
 
-import static de.edu.lmu.pcg.Util.*;
+import static de.edu.lmu.pcg.Util.newLongState;
 import static de.edu.lmu.pcg.impl.vector.preview21.Util.*;
 
 @SuppressWarnings("preview")
@@ -63,7 +65,6 @@ public class PCG_XSH_RS extends de.edu.lmu.pcg.PCG_XSH_RS implements PCGVector21
                 //problem is converting will leave half as 0 maybe castShape will fix it but has cost
                 //or we use parts and then or mask them together
                 var result = afterXorshift.lanewise(VectorOperators.LSHR, randomshift).convert(VectorOperators.L2I, 0);
-
 
 
                 result.intoMemorySegment(into, segment, order, INT_SPECIES.indexInRange(0, LONG_COUNT));
