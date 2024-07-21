@@ -45,7 +45,7 @@ public final class Util {
     }
 
     // skip method for long type
-    static long skipLong(long state, long steps) {
+    public static long skipLong(long state, long steps) {
         // a^i % m
         long a_i = modExp(longMultiplier, steps, longMod);
 
@@ -66,7 +66,7 @@ public final class Util {
     }
 
     // skip method for int type
-    static int skip(int state, int steps) {
+    public static int skip(int state, int steps) {
         // a^i % m
         int a_i = (int) modExp(intMultiplier, steps, intMod);
 
