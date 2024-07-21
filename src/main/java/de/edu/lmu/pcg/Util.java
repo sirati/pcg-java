@@ -209,4 +209,18 @@ public final class Util {
         }
         return Array.get(Array.newInstance(primitiveClass, 1), 0).getClass();
     }
+
+    public static void printConstant(String[] args) {
+        //log all consts for debugging
+        System.out.println("longMultiplier: " + longMultiplier);
+        System.out.println("longIncrement: " + longIncrement);
+        System.out.println("longMod: " + longMod);
+        System.out.println("intMultiplier: " + intMultiplier);
+        System.out.println("intIncrement: " + intIncrement);
+        System.out.println("intMod: " + intMod);
+        System.out.println("bigMultiplier: " + bigMultiplier);
+        System.out.println("bigIncrement: " + bigIncrement);
+        System.out.println("bigModulus: " + bigModulus);
+
+    }
 }
