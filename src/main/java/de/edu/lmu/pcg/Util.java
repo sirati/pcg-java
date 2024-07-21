@@ -110,11 +110,13 @@ public final class Util {
     public static int newIntState(int state) {
         int multiplied = (intMultiplier * state) % intMod;
         return (multiplied + intIncrement) % intMod;
+        //todo remove mod as its a noop (should be!)
     }
 
     public static long newLongState(long state) {
         long multiplied = (longMultiplier * state) % longMod;
         return (multiplied + longIncrement) % longMod; // (a * state + offset) % m;
+        //todo remove mod as its a noop (should be!)
     }
 
     public static BigInteger new128State(BigInteger state) {
