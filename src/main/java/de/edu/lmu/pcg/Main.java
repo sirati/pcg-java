@@ -24,7 +24,6 @@ public class Main {
                 // Output to console
                 outputToConsole(pcgInstance, 10);
 
-
                 // Output to file
 //                String filename = pcgClass_desc.cls_PCG().getSimpleName() + ".txt";
 //                outputToFile(pcgInstance, size, filename);
