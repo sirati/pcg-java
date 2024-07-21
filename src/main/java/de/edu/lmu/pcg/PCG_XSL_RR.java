@@ -14,8 +14,8 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
         }
     }
 
-    protected long stateLower;
-    protected long stateUpper;
+    protected long stateLower = Util.u128IncrementLow;
+    protected long stateUpper = Util.u128IncrementHigh;
 
 
 
@@ -33,23 +33,33 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
 
 
     public PCG_XSL_RR(long seedLower, long seedUpper) {
-        this.stateLower = seedLower;
-        this.stateUpper = seedUpper;
-        //todo SEED init is not done!!!! need to do newState etc!
+        increment(seedUpper, seedLower);
+        newState();
+    }
+    
+    private void increment(long incrementHigh, long incrementLow) {
+        long resultLower = this.stateLower + incrementLow;
+        long carry = (this.stateLower & 0xFFFFFFFFL) + (incrementLow & 0xFFFFFFFFL) >>> 32;
+        carry = ((this.stateLower >>> 32) + (incrementLow >>> 32) + carry) >>> 32;
+        this.stateUpper = this.stateUpper + incrementHigh + carry;
+        this.stateLower = resultLower;
+    }
+
+
+
+    private void multiply(long multiplierHigh, long multiplierLow) {
+        long resultLower = this.stateLower * multiplierLow;
+        this.stateUpper = Math.unsignedMultiplyHigh(this.stateLower , multiplierLow)
+                + this.stateLower * multiplierHigh
+                + this.stateUpper * multiplierLow;
+        this.stateLower = resultLower;
     }
 
 
     @Override
     public void newState() {
-        long lower = this.stateLower * Util.u128MultiplierLow;
-        long upper = Math.unsignedMultiplyHigh(this.stateLower , Util.u128MultiplierLow)
-                + this.stateLower * Util.u128MultiplierHigh
-                + this.stateUpper * Util.u128MultiplierLow;
-
-        this.stateLower = lower + Util.u128IncrementLow;
-        long carry = (lower & 0xFFFFFFFFL) + (Util.u128IncrementLow & 0xFFFFFFFFL) >>> 32;
-        carry = ((lower >>> 32) + (Util.u128IncrementLow >>> 32) + carry) >>> 32;
-        this.stateUpper = upper + Util.u128IncrementHigh + carry;
+        multiply(Util.u128MultiplierHigh, Util.u128MultiplierLow);
+        increment(Util.u128IncrementHigh, Util.u128IncrementLow);
     }
 
     @Override
