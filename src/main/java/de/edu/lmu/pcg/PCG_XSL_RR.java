@@ -21,7 +21,7 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     }
 
     public PCG_XSL_RR(BigInteger seed) {
-        this(seed.and(MASK_64).longValue(), seed.shiftRight(64).and(MASK_64).longValue());
+        this(new U128(seed));
     }
 
     public PCG_XSL_RR(U128 seed) {
