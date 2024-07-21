@@ -54,7 +54,9 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
 
     @Override
     public void skipLong(long ulong) {
-        //todo this.state = Util.skip128(this.state, ulong).and(MASK_128); // Ensure skipped state is 128-bit
+        var result = Util.skip128(new U128(this.stateUpper, this.stateLower), ulong);
+        this.stateLower = result.lo;
+        this.stateUpper = result.hi;
     }
 
     @Override
