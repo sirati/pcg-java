@@ -15,7 +15,7 @@ public final class Util {
     public static final long u128IncrementLow = 1442695040888963407L;
     public static final BigInteger u128Increment = BigInteger.valueOf(u128IncrementHigh).shiftLeft(64)
             .or(BigInteger.valueOf(u128IncrementLow));
-    public static final BigInteger u128Modulus = BigInteger.ONE.shiftLeft(127);
+    public static final BigInteger u128Modulus = BigInteger.ONE.shiftLeft(128);
 
     public static final long longMultiplier = 6364136223846793005L;
     public static final long longIncrement = 1442695040888963407L;
@@ -51,14 +51,13 @@ public final class Util {
 
     // calculate g^k mod 2^m
     // algorithm G in paper
-    private static int modExpInt(int multiplier, int steps, int modulus) {
+    private static int modExpInt(int multiplier, int steps) {
         int result = 1;
-        multiplier = multiplier % modulus;
         while (steps > 0) {
             if ((steps & 1) == 1) {
-                result = (result * multiplier) % modulus;
+                result = result * multiplier;
             }
-            multiplier = (multiplier * multiplier) % modulus;
+            multiplier = multiplier * multiplier;
             steps = steps >>> 1;
         }
         return result;
@@ -66,14 +65,14 @@ public final class Util {
 
     // calculate c * (g^k - 1/g - 1)  mod 2^m
     // algorithm C in paper
-    private static int modIncInt(int increment, int multiplier, int steps, int modulus) {
+    private static int modIncInt(int increment, int multiplier, int steps) {
         int result = 0;
         while (steps > 0) {
             if ((steps & 1) == 1) {
-                result = (result * multiplier + increment) % modulus;
+                result = result * multiplier + increment;
             }
-            increment = (increment * (multiplier + 1)) % modulus;
-            multiplier = (multiplier * multiplier) % modulus;
+            increment = increment * (multiplier + 1);
+            multiplier = multiplier * multiplier;
             steps = steps >>> 1;
         }
         return result;
@@ -82,14 +81,13 @@ public final class Util {
     // skip method for int type
     public static int skip(int state, int steps) {
         checkPositive(steps);
-        int g = (int) modExpInt(intMultiplier, steps, intMod);
-        int c = (int) modIncInt(intIncrement, intMultiplier, steps, intMod);
-        return (state*g + c) % intMod;
+        int g = (int) modExpInt(intMultiplier, steps);
+        int c = (int) modIncInt(intIncrement, intMultiplier, steps);
+        return state*g + c;
     }
 
     public static int newIntState(int state) {
-        int multiplied = (intMultiplier * state) % intMod;
-        return (multiplied + intIncrement) % intMod;
+        return intMultiplier * state + intIncrement;
     }
 
 
@@ -99,14 +97,13 @@ public final class Util {
 
     // calculate g^k mod 2^m
     // algorithm G in paper
-    private static long modExpLong(long multiplier, long steps, long modulus) {
+    private static long modExpLong(long multiplier, long steps) {
         long result = 1;
-        multiplier = multiplier % modulus;
         while (steps > 0) {
             if ((steps & 1) == 1) {
-                result = (result * multiplier) % modulus;
+                result = result * multiplier;
             }
-            multiplier = (multiplier * multiplier) % modulus;
+            multiplier = multiplier * multiplier;
             steps = steps >>> 1;
         }
         return result;
@@ -114,14 +111,14 @@ public final class Util {
 
     // calculate c * (g^k - 1/g - 1)  mod 2^m
     // algorithm C in paper
-    private static long modIncLong(long increment, long multiplier, long steps, long modulus) {
+    private static long modIncLong(long increment, long multiplier, long steps) {
         long result = 0;
         while (steps > 0) {
             if ((steps & 1) == 1) {
-                result = (result * multiplier + increment) % modulus;
+                result = result * multiplier + increment;
             }
-            increment = (increment * (multiplier + 1)) % modulus;
-            multiplier = (multiplier * multiplier) % modulus;
+            increment = increment * (multiplier + 1);
+            multiplier = multiplier * multiplier;
             steps = steps >>> 1;
         }
         return result;
@@ -130,14 +127,13 @@ public final class Util {
     // skip method for long type
     public static long skipLong(long state, long steps) {
         checkPositive(steps);
-        long g = modExpLong(longMultiplier, steps, longMod);
-        long c = modIncLong(longIncrement, longMultiplier, steps, longMod);
-        return (state*g + c) % longMod;
+        long g = modExpLong(longMultiplier, steps);
+        long c = modIncLong(longIncrement, longMultiplier, steps);
+        return state*g + c;
     }
 
     public static long newLongState(long state) {
-        long multiplied = (longMultiplier * state) % longMod;
-        return (multiplied + longIncrement) % longMod; // (a * state + offset) % m;
+        return longMultiplier * state + longIncrement;
     }
 
 
@@ -176,11 +172,13 @@ public final class Util {
     }
 
     // skip method for BigInteger type
-    public static BigInteger skip128(BigInteger state, long steps) {
+    public static U128 skip128(U128 state, long steps) {
+        BigInteger currentState = state.toBigInteger();
         checkPositive(steps);
         BigInteger g = modExpBigInt(u128Multiplier, steps, u128Modulus);
         BigInteger c = modIncBigInt(u128Increment, u128Multiplier, steps, u128Modulus);
-        return (state.multiply(g).add(c)).mod(u128Modulus);
+        BigInteger result = (currentState.multiply(g).add(c)).mod(u128Modulus);
+        return new U128(0L,0L); // TODO: fix related problems and implement return
     }
 
     public static BigInteger new128State(BigInteger state) {

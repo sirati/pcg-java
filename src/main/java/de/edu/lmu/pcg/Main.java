@@ -20,9 +20,14 @@ public class Main {
         for (var pcgClass_desc : pcgClasses) {
             try {
                 var pcgInstance = pcgClass_desc.service().create(seedU128);
+
+                // Output to console
+                outputToConsole(pcgInstance, 10);
+
+
                 // Output to file
-                String filename = pcgClass_desc.cls_PCG().getSimpleName() + ".txt";
-                outputToFile(pcgInstance, size, filename);
+//                String filename = pcgClass_desc.cls_PCG().getSimpleName() + ".txt";
+//                outputToFile(pcgInstance, size, filename);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -34,7 +39,6 @@ public class Main {
         long startTime = System.currentTimeMillis();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             for (int i = 0; i < amount; i++) {
-                // String randomNumber = getNextNormalized(pcg); // Generates a random number between 0 and 99
                 if (pcg instanceof PCGInt) {
                     int randomNumber = ((PCGInt) pcg).nextInt();
                     writer.write(Integer.toString(randomNumber));
@@ -53,5 +57,25 @@ public class Main {
         } catch (IOException e) {
             System.err.println("An IOException was caught: " + e.getMessage());
         }
+    }
+
+    private static void outputToConsole(Object pcg, long amount) {
+        System.out.println("====================================");
+        System.out.println(pcg.getClass().getSimpleName());
+        long startTime = System.currentTimeMillis();
+
+        for (int i = 0; i < amount; i++) {
+            if (pcg instanceof PCGInt) {
+                int randomNumber = ((PCGInt) pcg).nextInt();
+                System.out.println(randomNumber);
+            } else { // TODO: how to check for pcg 128 as we need to call
+                long randomNumber = ((PCGLong) pcg).nextLong();
+                System.out.println(randomNumber);
+            }
+        }
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        double durationInSeconds = duration / 1000.0;
+        System.out.println("generated " + amount + " random numbers in " + durationInSeconds + " seconds.\n");
     }
 }
