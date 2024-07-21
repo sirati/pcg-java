@@ -13,7 +13,7 @@ public class Main {
 
         var pcgClasses = PCGCtorService.AVAILABLE_PCGS.values();
         final var seedU64 = 42L;
-        final var seedU128 = new U128(seedU64, seedU64);
+        final var seedU128 = new U128(0, seedU64);
 
         long size = 1L << 26;
 
@@ -41,11 +41,11 @@ public class Main {
             for (int i = 0; i < amount; i++) {
                 if (pcg instanceof PCGInt) {
                     int randomNumber = ((PCGInt) pcg).nextInt();
-                    writer.write(Integer.toString(randomNumber));
+                    writer.write(Integer.toString(randomNumber, 16));
                     writer.newLine(); // Adds a new line after each number
                 } else {
                     long randomNumber = ((PCGLong) pcg).nextLong();
-                    writer.write(Long.toString(randomNumber));
+                    writer.write(Long.toString(randomNumber, 16));
                     writer.newLine(); // Adds a new line after each number
                 }
             }

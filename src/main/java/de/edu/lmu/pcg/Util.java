@@ -209,4 +209,30 @@ public final class Util {
         }
         return Array.get(Array.newInstance(primitiveClass, 1), 0).getClass();
     }
+
+    public static void main(String[] args) {
+        printConstant();
+    }
+
+    public static void printConstant() {
+        //log all consts for debugging
+        System.out.println("longMultiplier: " + longMultiplier);
+        System.out.println("longIncrement: " + longIncrement);
+        System.out.println("longMod: " + longMod);
+        System.out.println("intMultiplier: " + intMultiplier);
+        System.out.println("intIncrement: " + intIncrement);
+        System.out.println("intMod: " + intMod);
+
+        System.out.println("u128MultiplierHigh: " + u128MultiplierHigh + " 0x" + Long.toHexString(u128MultiplierHigh));
+        System.out.println("u128MultiplierLow: " + u128MultiplierLow + " 0x" + Long.toHexString(u128MultiplierLow));
+        System.out.println("u128IncrementHigh: " + u128IncrementHigh + " 0x" + Long.toHexString(u128IncrementHigh));
+        System.out.println("u128IncrementLow: " + u128IncrementLow + " 0x" + Long.toHexString(u128IncrementLow));
+
+
+        System.out.println("bigMultiplier: " + u128Multiplier + " 0x" + u128Multiplier.toString(16));
+
+        System.out.println("bigIncrement: " + u128Increment + " 0x" + u128Increment.toString(16));
+        System.out.println("bigModulus: " + u128Modulus);
+
+    }
 }

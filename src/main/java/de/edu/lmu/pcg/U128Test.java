@@ -35,7 +35,7 @@ public class U128Test {
     public static void main(String[] args) {
         Random random = new Random();
 
-        for (int i = 0; i < 1024*1024*1024; i++) {
+        for (long i = 0; i < 1024L*1024*1024*16; i++) {
             long stateLower = random.nextLong();
             long stateUpper = random.nextLong();
 
@@ -61,7 +61,6 @@ public class U128Test {
                 System.err.println("Mismatch at iteration " + i);
                 System.err.println("Expected: " + Long.toString(lowerResult2,  16) + " " + Long.toString(upperResult2, 16));
                 System.err.println("Actual  : " + Long.toString(lowerResult, 16) + " " + Long.toString(upperResult, 16));
-                return;
             }
         }
 

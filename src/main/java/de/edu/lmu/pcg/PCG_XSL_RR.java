@@ -4,7 +4,6 @@ import de.edu.lmu.pcg.services.PCGCtorService;
 import java.math.BigInteger;
 
 import static de.edu.lmu.pcg.Util.MASK_64;
-import static de.edu.lmu.pcg.Util.MASK_128;
 
 public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     public static class CtorService implements PCGCtorService.SeedU128<PCG_XSL_RR> {
@@ -14,8 +13,6 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
         }
     }
 
-    protected long stateLower;
-    protected long stateUpper;
 
 
 
@@ -31,25 +28,34 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
         this(seed.lo, seed.hi);
     }
 
-
+    protected long stateLower = Util.u128IncrementLow;
+    protected long stateUpper = Util.u128IncrementHigh;
     public PCG_XSL_RR(long seedLower, long seedUpper) {
-        this.stateLower = seedLower;
-        this.stateUpper = seedUpper;
-        //todo SEED init is not done!!!! need to do newState etc!
+        add(seedUpper, seedLower);
+        newState();
+    }
+
+    private void add(long incrementHigh, long incrementLow) {
+        long resultLower = this.stateLower + incrementLow;
+        long carry = (this.stateLower & 0xFFFFFFFFL) + (incrementLow & 0xFFFFFFFFL) >>> 32;
+        carry = ((this.stateLower >>> 32) + (incrementLow >>> 32) + carry) >>> 32;
+        this.stateUpper = this.stateUpper + incrementHigh + carry;
+        this.stateLower = resultLower;
+    }
+
+    private void multiply(long multiplierHigh, long multiplierLow) {
+        long resultLower = this.stateLower * multiplierLow;
+        this.stateUpper = Math.unsignedMultiplyHigh(this.stateLower , multiplierLow)
+                + this.stateLower * multiplierHigh
+                + this.stateUpper * multiplierLow;
+        this.stateLower = resultLower;
     }
 
 
     @Override
     public void newState() {
-        long lower = this.stateLower * Util.u128MultiplierLow;
-        long upper = Math.unsignedMultiplyHigh(this.stateLower , Util.u128MultiplierLow)
-                + this.stateLower * Util.u128MultiplierHigh
-                + this.stateUpper * Util.u128MultiplierLow;
-
-        this.stateLower = lower + Util.u128IncrementLow;
-        long carry = (lower & 0xFFFFFFFFL) + (Util.u128IncrementLow & 0xFFFFFFFFL) >>> 32;
-        carry = ((lower >>> 32) + (Util.u128IncrementLow >>> 32) + carry) >>> 32;
-        this.stateUpper = upper + Util.u128IncrementHigh + carry;
+        multiply(Util.u128MultiplierHigh, Util.u128MultiplierLow);
+        add(Util.u128IncrementHigh, Util.u128IncrementLow);
     }
 
     @Override
@@ -66,9 +72,10 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
 
     @Override
     public long nextLong() {
+        //System.out.println(new U128(this.stateUpper, this.stateLower).toHexString());
         // XOR the upper and lower parts
         long shiftedLong = this.stateLower ^ this.stateUpper;
-        int rotationDistance = (int) (this.stateLower >>> 58); //== all >> 122  this.state.shiftRight(122).intValue();
+        int rotationDistance = (int) (this.stateUpper >>> 58); //== all >> 122  this.state.shiftRight(122).intValue();
         newState();
         // return permutation
         return Long.rotateRight(shiftedLong, rotationDistance);

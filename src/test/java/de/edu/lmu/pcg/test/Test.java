@@ -3,88 +3,107 @@ import de.edu.lmu.pcg.*;
 import de.edu.lmu.pcg.services.PCGCtorService;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 public class Test {
     // test if the Java implementation returns the same results as the C implementation
     public static void main(String[] args) {
+        compareCAndJavaResults();
+    }
+
+    private static void compareCAndJavaResults() {
         var footest = (PCGLong & SeedTypeMarker<?>) new PCGBuilder<>().type("PCG_RXS_M_XS_64").seed(1L).build();
         footest.nextLong();
 
         var pcgClasses = PCGCtorService.AVAILABLE_PCGS.values();
         final var seedU64 = 42L;
-        final var seedU128 = new U128(seedU64, seedU64);
-
-        int size = 5000;
+        final var seedU128 = new U128(0, seedU64);
 
         // For all PCGs: First get results generated in C, second generate Java numbers and check differences
         for (var pcgClass_desc : pcgClasses) {
             var pcgInstance = pcgClass_desc.service().create(seedU128);
-                if (pcgInstance instanceof PCGInt) {
-                    // test PCGs with 32bit output
-                    List<Integer> cNums = new ArrayList<Integer>();
-                    try {
-                        System.out.println("Trying: " + pcgClass_desc.cls_PCG().getSimpleName());
-                        read32BitFile(cNums, pcgClass_desc.cls_PCG().getSimpleName());
-                    } catch (IOException ignored) {}
-                    int failed = test32BitOutput(pcgInstance, cNums, size);
-                    System.out.println("There were " + failed + " numbers different for " + pcgClass_desc.cls_PCG().getSimpleName() + ".");
-                } else {
-                    // test PCGs with 64bit output
-                    List<Long> cNums = new ArrayList<Long>();
-                    try {
-                        System.out.println("Trying: " + pcgClass_desc.cls_PCG().getSimpleName());
-                        read64BitFile(cNums, pcgClass_desc.cls_PCG().getSimpleName());
-                    } catch (IOException ignored) {}
-                    int failed = test64BitOutput(pcgInstance, cNums, size);
-                    System.out.println("There were " + failed + " numbers different for " + pcgClass_desc.cls_PCG().getSimpleName() + ".");
+            if (pcgInstance instanceof PCGInt) {
+                // test PCGs with 32bit output
+                try {
+                    checkCFileWith32Bit((PCGInt) pcgInstance, pcgClass_desc.cls_PCG().getSimpleName());
+                } catch (Exception e) {
+                    System.out.println("There was an error.");
+                    System.out.println(e);
+                }
+            } else {
+                // test PCGs with 64bit output
+                try {
+                    checkCFileWith64Bit((PCGLong) pcgInstance, pcgClass_desc.cls_PCG().getSimpleName());
+                } catch (Exception e) {
+                    System.out.println("There was an error: ");
+                    System.out.println(e);
+                }
+            }
+        }
+    }
+
+    private static void checkCFileWith32Bit(PCGInt pcg, String name) throws Exception {
+        int failedBytes = 0;
+        //read results from C implementation
+        try (RandomAccessFile file = new RandomAccessFile(new File("src/test/resources/results_C/C_" + name + ".bin"), "r")) {
+            //Get file channel in read-only mode
+            FileChannel fileChannel = file.getChannel();
+
+            //Get direct byte buffer access using channel.map() operation
+            MappedByteBuffer bufferC = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
+
+            //create and fill ByteBuffer with Java PCG
+            var bufferJava = java.nio.ByteBuffer.allocate(bufferC.capacity());
+            pcg.fill(bufferJava);
+
+            //check how often bufferVector and bufferManual are not equal
+            for (int i = 0; i < bufferC.capacity(); i++) {
+                if (bufferC.get(i) != bufferJava.get(i)) {
+                    failedBytes += 1;
                 }
             }
 
-    }
-
-    private static void read32BitFile(List<Integer> cNums, String name) throws IOException {
-        //read results from C implementation
-        DataInputStream in = new DataInputStream(new FileInputStream("src/test/resources/results_C/C_" + name + ".bin"));
-        while (in.available()>0) {
-            cNums.add(in.readInt());
-        }
-        in.close();
-    }
-
-    private static void read64BitFile(List<Long> cNums , String name) throws IOException {
-        //read results from C implementation
-        DataInputStream in = new DataInputStream(new FileInputStream("src/test/resources/results_C/C_" + name + ".bin"));
-        while (in.available()>0) {
-                cNums.add(in.readLong());
-        }
-        in.close();
-    }
-
-    private static int test32BitOutput(Object pcg, List<Integer> cNums, int size) {
-        // count numbers that differ in C and Java implementation on $size numbers
-        int failedNumbers = 0;
-        System.out.println(cNums);
-        for (int i = 1; i <= size; i++) {
-            int randomNumber = ((PCGInt) pcg).nextInt();
-            if (cNums.get(i) != randomNumber) {
-                failedNumbers += 1;
+            //output test Results
+            System.out.println("For " + name + ":");
+            if (failedBytes == 0) {
+                System.out.println("Results are equal!"+ "\n");
+            } else {
+                System.out.println("Results are in " + failedBytes + " Bytes not equal."+ "\n");
             }
         }
-        return failedNumbers;
     }
 
-    private static int test64BitOutput(Object pcg, List<Long> cNums, int size) {
-        // count numbers that differ in C and Java implementation on $size numbers
-        int failedNumbers = 0;
-        System.out.println(cNums);
-        for (int i = 1; i <= size; i++) {
-            long randomNumber = ((PCGLong) pcg).nextLong();
-            if (cNums.get(i) != randomNumber) {
-                failedNumbers += 1;
+    private static void checkCFileWith64Bit(PCGLong pcg, String name) throws Exception {
+        int failedBytes = 0;
+        //read results from C implementation
+        try (RandomAccessFile file = new RandomAccessFile(new File("src/test/resources/results_C/C_" + name + ".bin"), "r")) {
+            //Get file channel in read-only mode
+            FileChannel fileChannel = file.getChannel();
+
+            //Get direct byte buffer access using channel.map() operation
+            MappedByteBuffer bufferC = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
+
+            //create and fill ByteBuffer with Java PCG
+            var bufferJava = java.nio.ByteBuffer.allocate(bufferC.capacity());
+            pcg.fill(bufferJava);
+
+
+            //IntStream.range(0, 40000).map(i-> bufferC.get(i)).toArray()
+            //check how often bufferVector and bufferManual are not equal
+            for (int i = 0; i < bufferC.limit(); i++) {
+                if (bufferC.get(i) != bufferJava.get(i)) {
+                    failedBytes += 1;
+                }
+            }
+
+            //output test Results
+            System.out.println("For " + name + ":");
+            if (failedBytes == 0) {
+                System.out.println("Results are equal!"+ "\n");
+            } else {
+                System.out.println("Results are in " + failedBytes + " Bytes not equal."+ "\n");
             }
         }
-        return failedNumbers;
     }
 }

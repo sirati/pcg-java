@@ -46,4 +46,7 @@ public class U128 extends Number {
         });
     }
 
+    public String toHexString() {
+        return String.format("%016x%016x", hi, lo);
+    }
 }
