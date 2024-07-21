@@ -37,7 +37,7 @@ public class FillBufferBench2 {
      * Benchmarks the PCG algorithm
      * this is very biased towards bad results as we have to loop and call the fillInto method which is not optimised
      */
-    @Fork(value = 1, jvmArgsPrepend = {"--enable-preview", "--add-modules=jdk.incubator.vector"})
+    @Fork(jvmArgsPrepend = {"--enable-preview", "--add-modules=jdk.incubator.vector"})
     @Benchmark
     public ByteBuffer bench() {
         //init
