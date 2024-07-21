@@ -18,7 +18,8 @@ public class PCG_XSH_RR implements PCGInt, SeedTypeMarker<Long> {
     }
 
     public PCG_XSH_RR(long seed) {
-        this.state = seed;
+        this.state = Util.newLongState(0) + seed;
+        newState();
     }
 
     @Override
@@ -39,8 +40,8 @@ public class PCG_XSH_RR implements PCGInt, SeedTypeMarker<Long> {
     @Override
     public int nextInt() {
         // permutation
-        int shiftedInt = (int) ((this.state ^ (this.state >> 18)) >> 27);
-        int rotationDistance = (int) (this.state >> 59);
+        int shiftedInt = (int) ((this.state ^ (this.state >>> 18)) >>> 27);
+        int rotationDistance = (int) (this.state >>> 59);
         newState();
         return Integer.rotateRight(shiftedInt, rotationDistance);
     }
