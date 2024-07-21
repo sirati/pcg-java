@@ -4,6 +4,9 @@ import java.lang.reflect.Array;
 import java.math.BigInteger;
 
 public final class Util {
+    public static final BigInteger MASK_128 = new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", 16);
+    public static final BigInteger MASK_64 = new BigInteger("FFFFFFFFFFFFFFFF", 16);
+
     private Util() {
     }
 
@@ -108,20 +111,21 @@ public final class Util {
     }
 
     public static int newIntState(int state) {
-        int multiplied = (intMultiplier * state) % intMod;
-        return (multiplied + intIncrement) % intMod;
-        //todo remove mod as its a noop (should be!)
+        //no need for mod as the side of the state is 32 bits, which is automatically a mod 2^32
+        return intMultiplier * state + intIncrement;
     }
 
     public static long newLongState(long state) {
-        long multiplied = (longMultiplier * state) % longMod;
-        return (multiplied + longIncrement) % longMod; // (a * state + offset) % m;
-        //todo remove mod as its a noop (should be!)
+        //no need for mod as the side of the state is 64 bits, which is automatically a mod 2^64
+        return longMultiplier * state + longIncrement; // (a * state + offset) % m;
     }
 
     public static BigInteger new128State(BigInteger state) {
-        BigInteger multiplied = state.multiply(u128Multiplier).mod(bigModulus);
-        return (multiplied.add(u128Increment)).mod(bigModulus);
+        return state
+                .multiply(u128Multiplier)
+                .and(Util.MASK_128)
+                .add(u128Increment)
+                .and(Util.MASK_128);
     }
 
     public static Class<?> toWrapperClass(Class<?> primitiveClass) {

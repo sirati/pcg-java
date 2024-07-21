@@ -3,6 +3,9 @@ import de.edu.lmu.pcg.services.PCGCtorService;
 
 import java.math.BigInteger;
 
+import static de.edu.lmu.pcg.Util.MASK_64;
+import static de.edu.lmu.pcg.Util.MASK_128;
+
 public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     public static class CtorService implements PCGCtorService.SeedU128<PCG_XSL_RR> {
         @Override
@@ -10,8 +13,7 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
             return new PCG_XSL_RR(seed.toBigInteger());
         }
     }
-    private static final BigInteger MASK_128 = new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", 16);
-    private static final BigInteger MASK_64 = new BigInteger("FFFFFFFFFFFFFFFF", 16);
+
     protected BigInteger state;
 
 

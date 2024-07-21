@@ -96,8 +96,8 @@ public class LinearCompTest {
                 // l is updated whenever a discrepancy d is found and the current polynomial c is adjusted
                 // if a significant discrepancy is found (i.e., l <= N / 2), l is updated to reflect the new increased complexity of the LFSR
                 
-                // if (l <= N / 2) { // original
-                if (l <= N / 2 + (Math.random() - 0.5) * N / 10) { // adding some randomization to the threshold
+                if (l <= N / 2) { // original
+                // if (l <= N / 2 + (Math.random() - 0.5) * N / 10) { // adding some randomization to the threshold
                     l = N + 1 - l;
                     m = N;
                     System.arraycopy(t, 0, b, 0, n);
