@@ -1,15 +1,36 @@
 package de.edu.lmu.pcg.test;
 import de.edu.lmu.pcg.*;
 import de.edu.lmu.pcg.services.PCGCtorService;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.stream.Stream;
 
 public class Test {
     // test if the Java implementation returns the same results as the C implementation
     public static void main(String[] args) {
         compareCAndJavaResults();
+    }
+
+    public static Stream<PCGCtorService<?, ?>> rngCtorProvider() {
+        return Util.rngCtorProvider();
+    }
+
+    @ParameterizedTest()
+    @MethodSource("rngCtorProvider")
+    <T extends PCG & SeedTypeMarker<?>> void compareCAndJavaResultIndividually(PCGCtorService<T, ?> constructor) throws Exception {
+        // list of PCG versions to test
+        U128 seed = new U128( 0,42L);
+
+        var pcgInstance = constructor.create(seed);
+        if (pcgInstance instanceof PCGInt) {
+            checkCFileWith32Bit((PCGInt) pcgInstance, pcgInstance.getClass().getSimpleName());
+        } else {
+            checkCFileWith64Bit((PCGLong) pcgInstance, pcgInstance.getClass().getSimpleName());
+        }
     }
 
     private static void compareCAndJavaResults() {
