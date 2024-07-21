@@ -23,6 +23,12 @@ public class PCG_XSL_RR extends de.edu.lmu.pcg.PCG_XSL_RR implements PCGVector21
     public PCG_XSL_RR(BigInteger seed) {
         super(seed);
     }
+    public PCG_XSL_RR(U128 seed) {
+        super(seed);
+    }
+    public PCG_XSL_RR(long seedLower, long seedUpper) {
+        super(seedLower, seedUpper);
+    }
 
     @Override
     public void fillSegment(MemorySegment memorySegment, ByteOrder order) {

@@ -10,11 +10,12 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     public static class CtorService implements PCGCtorService.SeedU128<PCG_XSL_RR> {
         @Override
         public PCG_XSL_RR create(U128 seed) {
-            return new PCG_XSL_RR(seed.toBigInteger());
+            return new PCG_XSL_RR(seed);
         }
     }
 
-    protected BigInteger state;
+    protected long stateLower = Util.u128IncrementLow;
+    protected long stateUpper = Util.u128IncrementHigh;
 
 
 
@@ -23,18 +24,47 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     }
 
     public PCG_XSL_RR(BigInteger seed) {
-        this.state = Util.new128State(BigInteger.valueOf(0)).add(seed.and(MASK_128)); // Ensure initial state is 128-bit
-         newState();
+        this(seed.and(MASK_64).longValue(), seed.shiftRight(64).and(MASK_64).longValue());
     }
+
+    public PCG_XSL_RR(U128 seed) {
+        this(seed.lo, seed.hi);
+    }
+
+
+    public PCG_XSL_RR(long seedLower, long seedUpper) {
+        increment(seedUpper, seedLower);
+        newState();
+    }
+
+    private void increment(long incrementHigh, long incrementLow) {
+        long resultLower = this.stateLower + incrementLow;
+        long carry = (this.stateLower & 0xFFFFFFFFL) + (incrementLow & 0xFFFFFFFFL) >>> 32;
+        carry = ((this.stateLower >>> 32) + (incrementLow >>> 32) + carry) >>> 32;
+        this.stateUpper = this.stateUpper + incrementHigh + carry;
+        this.stateLower = resultLower;
+    }
+
+
+
+    private void multiply(long multiplierHigh, long multiplierLow) {
+        long resultLower = this.stateLower * multiplierLow;
+        this.stateUpper = Math.unsignedMultiplyHigh(this.stateLower , multiplierLow)
+                + this.stateLower * multiplierHigh
+                + this.stateUpper * multiplierLow;
+        this.stateLower = resultLower;
+    }
+
 
     @Override
     public void newState() {
-        this.state = Util.new128State(this.state).and(MASK_128); // Ensure new state is 128-bit
+        multiply(Util.u128MultiplierHigh, Util.u128MultiplierLow);
+        increment(Util.u128IncrementHigh, Util.u128IncrementLow);
     }
 
     @Override
     public void skipLong(long ulong) {
-        this.state = Util.skip128(this.state, ulong).and(MASK_128); // Ensure skipped state is 128-bit
+        //todo this.state = Util.skip128(this.state, ulong).and(MASK_128); // Ensure skipped state is 128-bit
     }
 
     @Override
@@ -44,12 +74,9 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
 
     @Override
     public long nextLong() {
-        // Extract lower and upper 64 bits
-        long lower64 = this.state.and(MASK_64).longValue();
-        long upper64 = this.state.shiftRight(64).and(MASK_64).longValue();
         // XOR the upper and lower parts
-        long shiftedLong = lower64 ^ upper64;
-        int rotationDistance = this.state.shiftRight(122).intValue();
+        long shiftedLong = this.stateLower ^ this.stateUpper;
+        int rotationDistance = (int) (this.stateLower >>> 58); //== all >> 122  this.state.shiftRight(122).intValue();
         newState();
         // return permutation
         return Long.rotateRight(shiftedLong, rotationDistance);
