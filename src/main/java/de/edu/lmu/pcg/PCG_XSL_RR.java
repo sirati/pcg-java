@@ -34,7 +34,7 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
         add(seedUpper, seedLower);
         newState();
     }
-    
+
     private void add(long incrementHigh, long incrementLow) {
         long resultLower = this.stateLower + incrementLow;
         long carry = (this.stateLower & 0xFFFFFFFFL) + (incrementLow & 0xFFFFFFFFL) >>> 32;
