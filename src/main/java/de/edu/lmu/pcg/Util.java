@@ -185,14 +185,14 @@ public final class Util {
         BigInteger result = (currentState.multiply(g).add(c)).mod(u128Modulus);
         return new U128(result);
     }
-
+/* //impl as long, long -> long, long inside of PCG_XSL_RR, cannot return 2 longs in a function, so it must be done there
     public static BigInteger new128State(BigInteger state) {
         return state
                 .multiply(u128Multiplier)
                 .and(Util.MASK_128)
                 .add(u128Increment)
                 .and(Util.MASK_128);
-    }
+    }*/
 
     // OTHER UTILS
     // ===========
