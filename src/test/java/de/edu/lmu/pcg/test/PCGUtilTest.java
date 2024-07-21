@@ -58,11 +58,14 @@ public class PCGUtilTest {
         return parameters.stream();
     }
 
-    static Stream<Object[]> zeroStepParameter() {
+    static Stream<Object[]> zeroOrNegativeStepParameter() {
         return Stream.of(
                 new Object[]{123456789, 0},
                 new Object[]{987654321L, 0L},
-                new Object[]{new BigInteger("123456789123456789123456789"), 0L}
+                new Object[]{new BigInteger("123456789123456789123456789"), 0L},
+                new Object[]{123456789, -1},
+                new Object[]{987654321L, -1L},
+                new Object[]{new BigInteger("123456789123456789123456789"), -1L}
         );
     }
 
@@ -117,7 +120,7 @@ public class PCGUtilTest {
     }
 
     @ParameterizedTest
-    @MethodSource("zeroStepParameter")
+    @MethodSource("zeroOrNegativeStepParameter")
     public void testSkipZeroSteps(Object seed, long steps) {
         if (seed instanceof Integer) {
             int initState = (int) seed;
