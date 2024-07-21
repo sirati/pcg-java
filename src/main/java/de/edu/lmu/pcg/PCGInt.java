@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 public interface PCGInt extends PCG {
     int nextInt();
-    default int bitesPerIteration() {
+    default int bitsPerIteration() {
         return 32;
     }
 

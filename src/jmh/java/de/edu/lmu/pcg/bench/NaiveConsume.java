@@ -28,7 +28,7 @@ public class NaiveConsume {
     public void bench(Blackhole bh) {
         //init
         var pcg = new PCG_RXS_M_XS_32(seed_init.nextInt());
-        var bits = pcg.bitesPerIteration();
+        var bits = pcg.bitsPerIteration();
         if (bits >> Integer.numberOfTrailingZeros(bits) != 1) {
             throw new RuntimeException("Bites per iteration must be a power of 2");
         }
