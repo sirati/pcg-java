@@ -21,8 +21,8 @@ public final class Util {
     public static final long longIncrement = 1442695040888963407L;
     public static final long longMod = 1L << 63;
 
-    public static final int intMultiplier = 1664525;
-    public static final int intIncrement = 1013904223;
+    public static final int intMultiplier = 747796405;
+    public static final int intIncrement = -1403630843;
     public static final int intMod = 1 << 31;
 
     // (base^exponent) % modulus
@@ -45,7 +45,7 @@ public final class Util {
     }
 
     // skip method for long type
-    static long skipLong(long state, long steps) {
+    public static long skipLong(long state, long steps) {
         // a^i % m
         long a_i = modExp(longMultiplier, steps, longMod);
 
@@ -66,7 +66,7 @@ public final class Util {
     }
 
     // skip method for int type
-    static int skip(int state, int steps) {
+    public static int skip(int state, int steps) {
         // a^i % m
         int a_i = (int) modExp(intMultiplier, steps, intMod);
 

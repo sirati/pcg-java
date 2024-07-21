@@ -15,7 +15,8 @@ public class PCG_RXS_M_XS_64 implements PCGLong, SeedTypeMarker<Long> {
     protected long state;
 
     public PCG_RXS_M_XS_64(long seed) {
-        this.state = seed;
+        this.state = Util.newLongState(0) + seed;
+        newState();
     }
 
     @Override
@@ -36,12 +37,12 @@ public class PCG_RXS_M_XS_64 implements PCGLong, SeedTypeMarker<Long> {
     @Override
     public long nextLong() {
         long mask = (1 << 5) -1;
-        long upper5Bits = (this.state >> (64-5)) & mask;
+        long upper5Bits = (this.state >>> (64-5)) & mask;
 
         //permutation
-        long xorshifted = this.state ^ (this.state >> 5+upper5Bits);
+        long xorshifted = this.state ^ (this.state >>> 5+upper5Bits);
         long multiplied = xorshifted * MCG_MULTIPLIER;
         newState();
-        return multiplied ^ (multiplied >> 43);
+        return multiplied ^ (multiplied >>> 43);
     }
 }

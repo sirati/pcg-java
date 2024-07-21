@@ -14,7 +14,10 @@ public class PCG_RXS_M_XS_32 implements PCGInt, SeedTypeMarker<Integer> {
 
     protected int state;
 
-    public PCG_RXS_M_XS_32(int seed) { this.state = seed; }
+    public PCG_RXS_M_XS_32(int seed) {
+        this.state = Util.newIntState(0) + seed;
+        newState();
+    }
 
     @Override
     public void newState() {
@@ -34,13 +37,13 @@ public class PCG_RXS_M_XS_32 implements PCGInt, SeedTypeMarker<Integer> {
     @Override
     public int nextInt() {
         int mask = (1 << 4) - 1;
-        int upper4Bits = (this.state >> (32-4) ) & mask;
+        int upper4Bits = (this.state >>> (32-4) ) & mask;
 
         // permutation
-        int xorshifted = this.state ^ (this.state >> 4+upper4Bits);
+        int xorshifted = this.state ^ (this.state >>> 4+upper4Bits);
         int multiplied = xorshifted * MCG_MULTIPLIER;
         newState();
-        return multiplied ^ (multiplied >> 22);
+        return multiplied ^ (multiplied >>> 22);
 
     }
 }
