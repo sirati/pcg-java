@@ -70,9 +70,10 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
 
     @Override
     public long nextLong() {
+        //System.out.println(new U128(this.stateUpper, this.stateLower).toHexString());
         // XOR the upper and lower parts
         long shiftedLong = this.stateLower ^ this.stateUpper;
-        int rotationDistance = (int) (this.stateLower >>> 58); //== all >> 122  this.state.shiftRight(122).intValue();
+        int rotationDistance = (int) (this.stateUpper >>> 58); //== all >> 122  this.state.shiftRight(122).intValue();
         newState();
         // return permutation
         return Long.rotateRight(shiftedLong, rotationDistance);

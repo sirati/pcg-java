@@ -88,6 +88,8 @@ public class Test {
             var bufferJava = java.nio.ByteBuffer.allocate(bufferC.capacity());
             pcg.fill(bufferJava);
 
+
+            //IntStream.range(0, 40000).map(i-> bufferC.get(i)).toArray()
             //check how often bufferVector and bufferManual are not equal
             for (int i = 0; i < bufferC.limit(); i++) {
                 if (bufferC.get(i) != bufferJava.get(i)) {

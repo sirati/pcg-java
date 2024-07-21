@@ -45,4 +45,8 @@ public class U128 extends Number {
                 (byte)(lo >>> 24), (byte)(lo >>> 16), (byte)(lo >>> 8), (byte)lo
         });
     }
+
+    public String toHexString() {
+        return String.format("%016x%016x", hi, lo);
+    }
 }
