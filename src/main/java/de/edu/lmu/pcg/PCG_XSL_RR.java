@@ -14,7 +14,8 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
         }
     }
 
-    protected BigInteger state;
+    protected long stateLower;
+    protected long stateUpper;
 
 
 
@@ -43,12 +44,9 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
 
     @Override
     public long nextLong() {
-        // Extract lower and upper 64 bits
-        long lower64 = this.state.and(MASK_64).longValue();
-        long upper64 = this.state.shiftRight(64).and(MASK_64).longValue();
         // XOR the upper and lower parts
-        long shiftedLong = lower64 ^ upper64;
-        int rotationDistance = this.state.shiftRight(122).intValue();
+        long shiftedLong = this.stateLower ^ this.stateUpper;
+        int rotationDistance = (int) (this.stateLower >>> 58); //== all >> 122  this.state.shiftRight(122).intValue();
         newState();
         // return permutation
         return Long.rotateRight(shiftedLong, rotationDistance);
