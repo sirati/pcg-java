@@ -2,7 +2,6 @@ package de.edu.lmu.pcg.test.crush;
 
 import de.edu.lmu.pcg.*;
 import de.edu.lmu.pcg.services.PCGCtorService;
-import de.edu.lmu.pcg.test.TestConstructor;
 import de.edu.lmu.pcg.test.Util;
 import org.junit.Test;
 import org.junit.jupiter.params.ParameterizedTest;

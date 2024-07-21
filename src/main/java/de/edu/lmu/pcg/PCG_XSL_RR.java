@@ -4,7 +4,6 @@ import de.edu.lmu.pcg.services.PCGCtorService;
 import java.math.BigInteger;
 
 import static de.edu.lmu.pcg.Util.MASK_64;
-import static de.edu.lmu.pcg.Util.MASK_128;
 
 public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     public static class CtorService implements PCGCtorService.SeedU128<PCG_XSL_RR> {
@@ -14,8 +13,6 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
         }
     }
 
-    protected long stateLower = Util.u128IncrementLow;
-    protected long stateUpper = Util.u128IncrementHigh;
 
 
 
@@ -31,21 +28,20 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
         this(seed.lo, seed.hi);
     }
 
-
+    protected long stateLower = Util.u128IncrementLow;
+    protected long stateUpper = Util.u128IncrementHigh;
     public PCG_XSL_RR(long seedLower, long seedUpper) {
-        increment(seedUpper, seedLower);
+        add(seedUpper, seedLower);
         newState();
     }
     
-    private void increment(long incrementHigh, long incrementLow) {
+    private void add(long incrementHigh, long incrementLow) {
         long resultLower = this.stateLower + incrementLow;
         long carry = (this.stateLower & 0xFFFFFFFFL) + (incrementLow & 0xFFFFFFFFL) >>> 32;
         carry = ((this.stateLower >>> 32) + (incrementLow >>> 32) + carry) >>> 32;
         this.stateUpper = this.stateUpper + incrementHigh + carry;
         this.stateLower = resultLower;
     }
-
-
 
     private void multiply(long multiplierHigh, long multiplierLow) {
         long resultLower = this.stateLower * multiplierLow;
@@ -59,7 +55,7 @@ public class PCG_XSL_RR implements PCGLong, SeedTypeMarker<U128> {
     @Override
     public void newState() {
         multiply(Util.u128MultiplierHigh, Util.u128MultiplierLow);
-        increment(Util.u128IncrementHigh, Util.u128IncrementLow);
+        add(Util.u128IncrementHigh, Util.u128IncrementLow);
     }
 
     @Override
