@@ -3,7 +3,6 @@ import jdk.incubator.vector.*;
 import de.edu.lmu.pcg.services.PCGCtorService;
 
 import java.lang.foreign.MemorySegment;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import static de.edu.lmu.pcg.Util.*;
@@ -26,7 +25,7 @@ public class PCG_XSH_RS extends de.edu.lmu.pcg.PCG_XSH_RS implements PCGVector21
 
     @Override
     public void fillSegment(MemorySegment into, ByteOrder order) {
-        variantFast(into, order);
+        variantNaiveSlow(into, order);
     }
 
     private void variantFast(MemorySegment into, ByteOrder order) {
@@ -93,7 +92,8 @@ public class PCG_XSH_RS extends de.edu.lmu.pcg.PCG_XSH_RS implements PCGVector21
             for (long segment = alignment; segment < max; segment += INT_SIZE) {
 
                 Vector<Integer> result = null;
-                for (int part = 0; part < INT_COUNT/LONG_COUNT; part++) {
+                byte blend_offset = LONG_COUNT;
+                for (int part = 0; part < L2I_REDUCTION_FACTOR; part++) {
 
                     //because there is internal dependency in the state calculation, we need to calculate unvectorized
                     //we need to displace the first element calculation to the end because we start this method with the state already updated
@@ -116,7 +116,9 @@ public class PCG_XSH_RS extends de.edu.lmu.pcg.PCG_XSH_RS implements PCGVector21
                         result = result_part;
                     } else {
                         //this ought to be blend() not OR / XOR!
-                        result = result.lanewise(VectorOperators.OR, result_part);
+                        byte blend_start = blend_offset;
+                        blend_offset += LONG_COUNT;
+                        result = result_part.blend(result, INT_SPECIES.indexInRange(blend_start, blend_offset));
                     }
                 }
 

@@ -2,14 +2,13 @@ package de.edu.lmu.pcg.impl.vector.preview21;
 
 import de.edu.lmu.pcg.PCGBuilder;
 import de.edu.lmu.pcg.PCG_XSH_RS;
-import de.edu.lmu.pcg.PCG_XSH_RR;
 
 import static de.edu.lmu.pcg.PCGImplementationVariant.JavaPrimitive;
 import static de.edu.lmu.pcg.PCGImplementationVariant.JavaVectoring;
 
 public class TestMain {
 
-    public static final int CAPACITY = 1024* 1024 * 1024;
+    public static final int CAPACITY = 1024* 1024 * 1024 ;
 
     public static void main(String[] args) {
         var builder = new PCGBuilder<>().type(PCG_XSH_RS.class).seed(42L);
@@ -20,8 +19,8 @@ public class TestMain {
         if (pcgManual.getImplementationVariant() == pcgVector.getImplementationVariant())
             throw new AssertionError(STR."Implementation variants are equal: \{pcgManual.getImplementationVariant()}");
 
-        var bufferVector = java.nio.ByteBuffer.allocate(CAPACITY);
-        var bufferManual = java.nio.ByteBuffer.allocate(CAPACITY);
+        var bufferVector = java.nio.ByteBuffer.allocateDirect(CAPACITY);
+        var bufferManual = java.nio.ByteBuffer.allocateDirect(CAPACITY);
 
         //check millis
         long start = System.currentTimeMillis();
@@ -34,11 +33,12 @@ public class TestMain {
         System.out.println("Manual took: " + (end - start) + "ms");
 
         //check if bufferVector and bufferManual are equal
-       bufferVector.flip();
-       bufferManual.flip();
-        for (int i = 0; i < bufferVector.limit(); i++) {
+        if (bufferVector.capacity() != bufferManual.capacity() || bufferVector.limit() != CAPACITY || bufferManual.limit() != bufferVector.limit())
+            throw new AssertionError("Something is wrong with the buffers, they are not equal in capacity or limit. Equals check with produce false positives.");
+
+        for (int i = 0; i < bufferVector.capacity(); i++) {
             if (bufferVector.get(i) != bufferManual.get(i)) {
-                System.out.println("Buffers are not equal");
+                System.out.println(STR."Buffers are not equal at: \{i}");
                 return;
             }
         }
