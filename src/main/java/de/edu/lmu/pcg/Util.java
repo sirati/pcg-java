@@ -178,8 +178,8 @@ public final class Util {
 
     // skip method for BigInteger type
     public static U128 skip128(U128 state, long steps) {
-        BigInteger currentState = state.toBigInteger();
         checkPositive(steps);
+        BigInteger currentState = state.toBigInteger();
         BigInteger g = modExpBigInt(u128Multiplier, steps, u128Modulus);
         BigInteger c = modIncBigInt(u128Increment, u128Multiplier, steps, u128Modulus);
         BigInteger result = (currentState.multiply(g).add(c)).mod(u128Modulus);

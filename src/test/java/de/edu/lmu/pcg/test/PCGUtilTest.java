@@ -1,11 +1,13 @@
 package de.edu.lmu.pcg.test;
 
-import java.math.BigInteger;
+import de.edu.lmu.pcg.U128;
 import de.edu.lmu.pcg.Util;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -114,7 +116,7 @@ public class PCGUtilTest {
             repeatedState = Util.new128State(repeatedState);
         }
 
-        BigInteger skippedState = Util.skip128(initState, steps);
+        BigInteger skippedState = Util.skip128(new U128(initState), steps).toBigInteger();
         System.out.println("Seed: " + initState + ", Steps: " + steps + ", Expected: " + repeatedState + ", Actual: " + skippedState);
         Assertions.assertEquals(repeatedState, skippedState, "Failed for seed: " + initState + " with steps: " + steps);
     }
@@ -130,7 +132,7 @@ public class PCGUtilTest {
             Assertions.assertThrows(IllegalArgumentException.class, () -> Util.skipLong(initState, steps));
         } else if (seed instanceof BigInteger) {
             BigInteger initState = (BigInteger) seed;
-            Assertions.assertThrows(IllegalArgumentException.class, () -> Util.skip128(initState, steps));
+            Assertions.assertThrows(IllegalArgumentException.class, () -> Util.skip128(new U128(initState), steps));
         }
     }
 }
