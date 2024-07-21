@@ -10,7 +10,7 @@ import static de.edu.lmu.pcg.Util.*;
 import static de.edu.lmu.pcg.impl.vector.preview21.Util.*;
 
 @SuppressWarnings("preview")
-public class PCG_XSH_RS extends de.edu.lmu.pcg.PCG_XSH_RS implements PCGVector21 {
+public class PCG_XSH_RS extends de.edu.lmu.pcg.PCG_XSH_RS implements PCGVector21.U32 {
     public static class CtorService implements PCGCtorService.SeedU64<PCG_XSH_RS>,
             Marker<PCG_XSH_RS, Long> {
         @Override
@@ -23,10 +23,6 @@ public class PCG_XSH_RS extends de.edu.lmu.pcg.PCG_XSH_RS implements PCGVector21
         super(seed);
     }
 
-    @Override
-    public void fill(ByteBuffer byteBuffer) {
-        PCGVector21.super.fill(byteBuffer);
-    }
 
     @Override
     public void fillSegment(MemorySegment into, ByteOrder order) {
@@ -68,7 +64,7 @@ public class PCG_XSH_RS extends de.edu.lmu.pcg.PCG_XSH_RS implements PCGVector21
 
 
 
-                result.intoMemorySegment(into, segment, order, IntVector.SPECIES_PREFERRED.indexInRange(0, LONG_COUNT));
+                result.intoMemorySegment(into, segment, order, INT_SPECIES.indexInRange(0, LONG_COUNT));
             }
             this.state = state;
         }
@@ -116,6 +112,7 @@ public class PCG_XSH_RS extends de.edu.lmu.pcg.PCG_XSH_RS implements PCGVector21
                     if (part == 0) {
                         result = result_part;
                     } else {
+                        //this ought to be blend() not OR / XOR!
                         result = result.lanewise(VectorOperators.OR, result_part);
                     }
                 }

@@ -1,8 +1,6 @@
 package de.edu.lmu.pcg.impl.vector.preview21;
 
-import de.edu.lmu.pcg.PCG;
-import de.edu.lmu.pcg.PCGNative;
-import de.edu.lmu.pcg.SeedTypeMarker;
+import de.edu.lmu.pcg.*;
 import de.edu.lmu.pcg.services.PCGCtorService;
 
 import java.lang.foreign.MemorySegment;
@@ -15,5 +13,20 @@ public interface PCGVector21 extends PCGNative<MemorySegment> {
     @Override
     default void fill(ByteBuffer byteBuffer) {
         fillSegment(MemorySegment.ofBuffer(byteBuffer), byteBuffer.order());
+    }
+
+    interface U32 extends PCGVector21, PCGInt {
+        @Override
+        default void fill(ByteBuffer byteBuffer) {
+            PCGVector21.super.fill(byteBuffer);
+        }
+    }
+
+
+    interface U64 extends PCGVector21, PCGLong {
+        @Override
+        default void fill(ByteBuffer byteBuffer) {
+            PCGVector21.super.fill(byteBuffer);
+        }
     }
 }

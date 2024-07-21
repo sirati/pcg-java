@@ -2,6 +2,8 @@ package de.edu.lmu.pcg;
 
 import java.math.BigInteger;
 
+import static de.edu.lmu.pcg.Util.MASK_64;
+
 public class U128 extends Number {
     public final long hi;
     public final long lo;
@@ -9,6 +11,10 @@ public class U128 extends Number {
     public U128(long hi, long lo) {
         this.hi = hi;
         this.lo = lo;
+    }
+
+    public U128(BigInteger value) {
+        this(value.and(MASK_64).longValue(), value.shiftRight(64).and(MASK_64).longValue());
     }
 
     @Override

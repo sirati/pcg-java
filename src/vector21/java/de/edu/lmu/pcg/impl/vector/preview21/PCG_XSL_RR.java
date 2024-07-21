@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 @SuppressWarnings("preview")
-public class PCG_XSL_RR extends de.edu.lmu.pcg.PCG_XSL_RR implements PCGVector21 {
+public class PCG_XSL_RR extends de.edu.lmu.pcg.PCG_XSL_RR implements PCGVector21.U64 {
     public static class CtorService implements PCGCtorService.SeedU128<PCG_XSL_RR>,
             PCGVector21.Marker<PCG_XSL_RR, U128> {
         @Override
@@ -23,10 +23,11 @@ public class PCG_XSL_RR extends de.edu.lmu.pcg.PCG_XSL_RR implements PCGVector21
     public PCG_XSL_RR(BigInteger seed) {
         super(seed);
     }
-
-    @Override
-    public void fill(ByteBuffer byteBuffer) {
-        PCGVector21.super.fill(byteBuffer);
+    public PCG_XSL_RR(U128 seed) {
+        super(seed);
+    }
+    public PCG_XSL_RR(long seedLower, long seedUpper) {
+        super(seedLower, seedUpper);
     }
 
     @Override

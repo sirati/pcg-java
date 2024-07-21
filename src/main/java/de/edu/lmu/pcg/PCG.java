@@ -22,9 +22,9 @@ public interface PCG  {
      * @param byteBuffer remaining space must be aligned to bytesPerIteration
      */
     void fill(ByteBuffer byteBuffer);
-    int bitesPerIteration();
+    int bitsPerIteration();
     default int bytesPerIteration() {
-        return bitesPerIteration() / 8;
+        return bitsPerIteration() / 8;
     }
 
 
