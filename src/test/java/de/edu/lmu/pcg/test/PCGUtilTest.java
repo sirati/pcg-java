@@ -1,5 +1,6 @@
 package de.edu.lmu.pcg.test;
 
+import de.edu.lmu.pcg.PCG_XSL_RR;
 import de.edu.lmu.pcg.U128;
 import de.edu.lmu.pcg.Util;
 
@@ -106,19 +107,31 @@ public class PCGUtilTest {
         Assertions.assertEquals(repeatedState, skippedState, "Failed for seed: " + initState + " with steps: " + steps);
     }
 
+    private class PCG_XSL_RR_SKIP_TEST extends PCG_XSL_RR {
+
+
+        public PCG_XSL_RR_SKIP_TEST(BigInteger seed) {
+            super(seed);
+        }
+
+        public U128 getState() {
+            return new U128(stateUpper, stateLower);
+        }
+    }
+
     @ParameterizedTest
     @MethodSource("bigIntParameter")
     public void testSkipBigInteger(BigInteger seed, long steps) {
-        BigInteger initState = seed;
-        BigInteger repeatedState = initState;
+        var repeatedState = new PCG_XSL_RR_SKIP_TEST(seed);
+        U128 initState = repeatedState.getState();
 
         for (long i = 0; i < steps; i++) {
-            repeatedState = Util.new128State(repeatedState);
+            repeatedState.newState();
         }
 
-        BigInteger skippedState = Util.skip128(new U128(initState), steps).toBigInteger();
-        System.out.println("Seed: " + initState + ", Steps: " + steps + ", Expected: " + repeatedState + ", Actual: " + skippedState);
-        Assertions.assertEquals(repeatedState, skippedState, "Failed for seed: " + initState + " with steps: " + steps);
+        BigInteger skippedState = Util.skip128(initState, steps).toBigInteger();
+        System.out.println("Seed: " + initState + ", Steps: " + steps + ", Expected: " + repeatedState.getState().toBigInteger().toString(16) + ", Actual: " + skippedState.toString(16));
+        Assertions.assertEquals(repeatedState.getState().toBigInteger(), skippedState, "Failed for seed: " + initState + " with steps: " + steps);
     }
 
     @ParameterizedTest
