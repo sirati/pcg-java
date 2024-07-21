@@ -68,7 +68,7 @@ public class Main {
             if (pcg instanceof PCGInt) {
                 int randomNumber = ((PCGInt) pcg).nextInt();
                 System.out.println(randomNumber);
-            } else { // TODO: how to check for pcg 128 as we need to call
+            } else {
                 long randomNumber = ((PCGLong) pcg).nextLong();
                 System.out.println(randomNumber);
             }
