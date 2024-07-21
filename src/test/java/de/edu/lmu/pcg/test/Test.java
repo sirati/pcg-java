@@ -18,7 +18,7 @@ public class Test {
 
         var pcgClasses = PCGCtorService.AVAILABLE_PCGS.values();
         final var seedU64 = 42L;
-        final var seedU128 = new U128(seedU64, seedU64);
+        final var seedU128 = new U128(0, seedU64);
 
         // For all PCGs: First get results generated in C, second generate Java numbers and check differences
         for (var pcgClass_desc : pcgClasses) {
