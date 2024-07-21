@@ -26,9 +26,9 @@ test {
 }
 
 sourceSets {
-    main {
-        resources {
-            srcDirs = ['src/main/resources', file("build/libs/version_specific/jvm/21")]
+    jarLoadTest {
+         java {
+            srcDirs = ['src/jar_load_test/java']
         }
     }
 
@@ -64,6 +64,7 @@ configurations {
 dependencies {
     // Add dependencies for crush tests if any
     crushImplementation 'junit:junit:4.13.2'
+    jarLoadTestImplementation 'junit:junit:4.13.2'
 
     //crushTest need access to main
     crushImplementation sourceSets.main.output
@@ -78,7 +79,7 @@ dependencies {
 
 task crushTest(type: Test) {
     description = 'Runs the crush tests.'
-    group = 'verification'
+    group = 'crypto-verification'
 
     testClassesDirs = sourceSets.crush.output.classesDirs
     classpath = sourceSets.crush.runtimeClasspath
@@ -91,8 +92,18 @@ task crushTest(type: Test) {
 
 check.dependsOn crushTest
 
+
+task jarLoadTest(type: Test) {
+
+    testClassesDirs = sourceSets.jarLoadTest.output.classesDirs
+    classpath = sourceSets.jarLoadTest.runtimeClasspath
+
+    jvmArgs = ['--enable-preview', '--enable-native-access=ALL-UNNAMED']
+}
+
 tasks.withType(JavaCompile).matching {
-    it.name == 'compileVector21Java' || it.name == 'compileCrushJava'
+    it.name == 'compileVector21Java'
+            || it.name == 'compileCrushJava'
 }.configureEach {
     it.options.compilerArgs.add('--enable-preview')
 }
@@ -104,7 +115,7 @@ tasks.withType(JavaCompile).matching {
 
 
 tasks.withType(Test) {
-    jvmArgs += ['--add-modules', 'jdk.incubator.vector']
+    jvmArgs += ['--add-modules=jdk.incubator.vector']
 }
 
 task vector21testmainrun(type: JavaExec) {
@@ -129,7 +140,7 @@ tasks.withType(JavaExec).matching {
     jvmArgs = ['--enable-preview']
 }
 
-task vector21Jar(type: Jar) {
+tasks.register('vector21Jar', Jar) {
     archiveClassifier.set('vector21')
     from sourceSets.vector21.output
 }
@@ -142,9 +153,12 @@ task vector21Jar(type: Jar) {
 }*/
 
 
-task copyVersionSpecificJarToResources(type: Copy) {
+
+
+//<editor-fold defaultstate="collapsed" desc="Copying Vector21 to Mains resources">
+tasks.register('copyVersionSpecificJarToResources', Copy) {
     from vector21Jar.archiveFile
-    into getLayout().getBuildDirectory().dir("./resources/main/libs/version_specific/jvm/21/")
+    into getLayout().getBuildDirectory().dir("./resources/main/libs/version_specific/jvm/")
 }
 //here we have to be a bit tricky, because technically compiling the version specific jar depends on main classes
 //however the jar artifact itself does not include the main classes or resources so we can create the jar after
@@ -157,6 +171,25 @@ var indirectDependencyOfCopyVSJar = ["compileJava", "processResources", "classes
 tasks.matching { !indirectDependencyOfCopyVSJar.contains(it.name) }.configureEach {
     mustRunAfter copyVersionSpecificJarToResources
 }
+//</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="Copying PCG Main artifact to jar_load_test resources">
+tasks.register('copyJarArtifactToJarTestResources', Copy) {
+    from jar.archiveFile
+    into getLayout().getBuildDirectory().dir("./resources/jarLoadTest/libs/")
+    rename { "pcg.jar" }
+}
+//here we have to be a bit tricky, because technically compiling the version specific jar depends on main classes
+//however the jar artifact itself does not include the main classes or resources so we can create the jar after
+// and ensure it is added to be resources of main before any execution starts/the main artifact is build
+//copyJarArtifactToJarTestResources.dependsOn jar
+compileJarLoadTestJava.finalizedBy copyJarArtifactToJarTestResources
+var indirectDependencyOfCopyJarTest = indirectDependencyOfCopyVSJar + ["copyJarArtifactToJarTestResources", "jar", "compileJarLoadTestJava"]
+
+tasks.matching { !indirectDependencyOfCopyJarTest.contains(it.name) }.configureEach {
+    mustRunAfter copyJarArtifactToJarTestResources
+}
+//</editor-fold>
+
 
 gradle.taskGraph.whenReady {taskGraph ->
     println "Printing Planned Tasks Execution Order with causing dependencies"

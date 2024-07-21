@@ -16,11 +16,12 @@ import org.xml.sax.SAXException;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
 
@@ -28,42 +29,74 @@ public class JDKRequirement {
 
     static ClassLoader load_version_specific() throws URISyntaxException, IOException {
         var currentJDK = Requirement.fromCurrentJDK();
-        String versionSpecificPath = "libs/version_specific/jvm/" + currentJDK.javaVersionMajor + "/";
+        String versionSpecificPath = "libs/version_specific/jvm/";
 
         List<URL> jarUrls = new ArrayList<>();
 
         var folders = PCGCtorService.class.getProtectionDomain().getClassLoader().getResources(versionSpecificPath).asIterator();
+        var perJar = new HashMap<String, Set<String>>();
+
         for (Iterator<URL> it = folders; it.hasNext(); ) {
-            var folder = new File(it.next().toURI());
-            if (folder.isDirectory()) {
-                File[] jarFiles = folder.listFiles((dir, name) -> name.endsWith(".jar"));
-                if (jarFiles != null) {
-                    for (File jarFile : jarFiles) {
-
-
-                        if (!verifyJar(jarFile, currentJDK)) continue; //if we failed we skip this jar
-
-                        jarUrls.add(jarFile.toURI().toURL());
+            var url = it.next();
+            if (url.getProtocol() == "jar") {
+                var jarSeparator = url.getPath().indexOf("!/");
+                perJar.computeIfAbsent(url.getPath().substring(5, jarSeparator), k -> new HashSet<>())
+                        .add(url.getPath().substring(jarSeparator + 2));
+            } else {
+                var folder = new File(url.toURI());
+                if (folder.isDirectory()) {
+                    File[] jarFiles = folder.listFiles((dir, name) -> name.endsWith(".jar"));
+                    if (jarFiles != null) {
+                        for (File jarFile : jarFiles) {
+                            if (!verifyJar(new FileInputStream(jarFile), currentJDK)) continue; //if we failed we skip this jar
+                            jarUrls.add(jarFile.toURI().toURL());
+                        }
+                    } else {
+                        throw new RuntimeException("No jar files found in " + folder + " this indicated an IO error or a bug here!");
                     }
-                } else {
-                    throw new RuntimeException("No jar files found in " + folder + " this indicated an IO error or a bug here!");
                 }
+            }
+        }
+        for (var entry : perJar.entrySet()) {
+            try (JarFile jarFile = new JarFile(Paths.get(new URI("file:" + entry.getKey())).toFile())) {
+                jarFile.stream().filter(jarEntry -> entry.getValue().stream().anyMatch(path -> jarEntry.getName().startsWith(path)))
+                        .filter(jarEntry -> {
+                            try {
+                                return verifyJar(jarFile.getInputStream(jarEntry), currentJDK);
+                            } catch (IOException e) {
+                                return false;
+                            }
+                        })
+                        .map(jarEntry -> {
+                            try {
+                                //extract the jar entry to a temp file
+                                File tempFile = File.createTempFile("pcg-inner-jar" , new File(jarEntry.getName()).getName());
+                                tempFile.deleteOnExit();
+                                try (var is = jarFile.getInputStream(jarEntry);
+                                     var os = new FileOutputStream(tempFile)) {
+                                    is.transferTo(os);
+                                }
+
+                                return tempFile.toURI().toURL();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                        .forEach(jarUrls::add);
             }
         }
 
 
         if (!jarUrls.isEmpty()) {
             URL[] urls = jarUrls.toArray(new URL[0]);
-            URLClassLoader urlClassLoader = new URLClassLoader(urls, PCGCtorService.class.getClassLoader());
-            //here we recursively link the classloaders, so we may access them later
-            return urlClassLoader;
+            return new URLClassLoader(urls, PCGCtorService.class.getClassLoader());
         } else {
             return PCGCtorService.class.getClassLoader();
         }
     }
 
-    private static boolean verifyJar(File jarFile, Requirement currentJDK) {
-        try (var is = new JarInputStream(new FileInputStream(jarFile))) {
+    private static boolean verifyJar(InputStream jarFile, Requirement currentJDK) {
+        try (var is = new JarInputStream(jarFile)) {
             //we need to skip till the META-INF/pcg-jdk-requirements.txt entry
             JarEntry entry;
             for (entry=is.getNextJarEntry(); entry!=null; entry=is.getNextJarEntry()) {
@@ -169,4 +202,6 @@ public class JDKRequirement {
 
         return writer.toString();
     }
+
+
 }
