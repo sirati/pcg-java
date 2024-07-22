@@ -68,7 +68,7 @@ are the neutral methods `fill(ByteBuffer buf)` or `fillOnceInto(int[] arr, int s
 
 ### Running Crush
 
-1. you need to install [libtestu01.0-devel](https://packages.debian.org/sid/libtestu01-0-dev) (for Linux, or else
+1. you need to install [libtestu01-0-dev](https://packages.debian.org/sid/libtestu01-0-dev) (for Linux, or else
    download from the [testU01 homepage](https://simul.iro.umontreal.ca/testu01/tu01.html) and figure out yourself how to
    link the rust project with it)
 2. have rust & jdk21 installed
