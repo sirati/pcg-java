@@ -73,12 +73,12 @@ are the neutral methods `fill(ByteBuffer buf)` or `fillOnceInto(int[] arr, int s
    link the rust project with it)
 2. have rust & jdk21 installed
 3. run ```cargo build --package pcg_test_crush --lib``` (this needs to be debug build!)
-4. run ```./gradlew crushTest```
+4. run ```./gradlew crushTest  --info```
 
 ### Running Other statistical Tests and comparative Verification
 
 For the linear complexity test, comparison with in C-Project generated random numbers and test of the skip methode:
-run ```./gradlew test``` will automatically perform all the below and all currently runtime available PCGs
+run ```./gradlew test --info``` will automatically perform all the below and all currently runtime available PCGs
 
 Go to ```src/test/java/de/edu/lmu/pcg/test```. Here is the file to...
 
