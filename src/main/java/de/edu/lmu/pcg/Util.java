@@ -22,12 +22,9 @@ public final class Util {
 
     public static final long longMultiplier = 6364136223846793005L;
     public static final long longIncrement = 1442695040888963407L;
-    public static final long longMod = 1L << 63;
 
     public static final int intMultiplier = 747796405;
     public static final int intIncrement = -1403630843;
-    public static final int intMod = 1 << 31;
-
 
     /*
     Modification of internal state
@@ -85,7 +82,7 @@ public final class Util {
         checkPositive(steps);
         int g = (int) modExpInt(intMultiplier, steps);
         int c = (int) modIncInt(intIncrement, intMultiplier, steps);
-        return (state * g + c) % intMod;
+        return state * g + c;
     }
 
     public static int newIntState(int state) {
@@ -215,10 +212,8 @@ public final class Util {
         //log all consts for debugging
         System.out.println("longMultiplier: " + longMultiplier);
         System.out.println("longIncrement: " + longIncrement);
-        System.out.println("longMod: " + longMod);
         System.out.println("intMultiplier: " + intMultiplier);
         System.out.println("intIncrement: " + intIncrement);
-        System.out.println("intMod: " + intMod);
 
         System.out.println("u128MultiplierHigh: " + u128MultiplierHigh + " 0x" + Long.toHexString(u128MultiplierHigh));
         System.out.println("u128MultiplierLow: " + u128MultiplierLow + " 0x" + Long.toHexString(u128MultiplierLow));
