@@ -48,7 +48,7 @@ public class LinearCompTest {
         // perform linear complexity test on sequence
         int linearComplexity = calculateLinearComplexity(byteBuffer.asIntBuffer());
 //        System.out.println("Generated sequence for " + rng.getClass().getSimpleName() + ": " + Arrays.toString(sequence));
-//        System.out.println("Linear complexity for size " + size + ": " + linearComplexity);
+       System.out.println("Linear complexity for size " + size + ": " + linearComplexity);
         if (linearComplexity < 10) {
             throw new RuntimeException("Linear complexity less than 10: " + linearComplexity);
         } else {

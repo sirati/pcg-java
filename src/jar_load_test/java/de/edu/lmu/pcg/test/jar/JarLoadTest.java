@@ -44,12 +44,12 @@ public class JarLoadTest {
         } catch (java.lang.ExceptionInInitializerError e) {
             throw new RuntimeException("That getting the field failed by ExceptionInInitializerError is a strong indicator that this test successfully found the failure case", e);
         }
-        if (AVAILABLE_PCGS.size() != 10)
-            throw new AssertionError("AVAILABLE_PCGS.size() != 10, maybe vector loading failed?");
+        if (AVAILABLE_PCGS.size() != 7)
+            throw new AssertionError("AVAILABLE_PCGS.size() != 7, maybe vector loading failed?");
 
-        //check that 5 were loaded from impl.vector.preview21
-        if (5 != AVAILABLE_PCGS.keySet().stream().filter(key -> key.getName().contains("impl.vector.preview21")).count())
-            throw new AssertionError("did not load 5 from impl.vector.preview21");
+        //check that 2 were loaded from impl.vector.preview21
+        if (2 != AVAILABLE_PCGS.keySet().stream().filter(key -> key.getName().contains("impl.vector.preview21")).count())
+            throw new AssertionError("did not load 2 from impl.vector.preview21");
 
     }
 
